@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  
+
+  
+  <title>大数据日志分析系统-缓存组件kafka | 最终幻想</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="kafka简介是一种高吞吐量的分布式发布订阅消息系统，当数据量不稳定，数据量大的时候想到它就对了。 zookeeper简介是一个分布式的，开放源码的分布式应用程序协调服务,很多地方用到, 最常见的是为集群提供基础的、高可用HA(High Availability)服务是kafka集群的基础依赖，同时也是hadoop系列中实现HA的基础组件。实现HDFS的NamaNode和YARN的Resource">
+<meta name="keywords" content="kafka">
+<meta property="og:type" content="article">
+<meta property="og:title" content="大数据日志分析系统-缓存组件kafka">
+<meta property="og:url" content="https://alexguo.net/2018/12/18/大数据日志分析系统-缓存组件kafka/index.html">
+<meta property="og:site_name" content="最终幻想">
+<meta property="og:description" content="kafka简介是一种高吞吐量的分布式发布订阅消息系统，当数据量不稳定，数据量大的时候想到它就对了。 zookeeper简介是一个分布式的，开放源码的分布式应用程序协调服务,很多地方用到, 最常见的是为集群提供基础的、高可用HA(High Availability)服务是kafka集群的基础依赖，同时也是hadoop系列中实现HA的基础组件。实现HDFS的NamaNode和YARN的Resource">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-03-21T03:29:36.566Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="大数据日志分析系统-缓存组件kafka">
+<meta name="twitter:description" content="kafka简介是一种高吞吐量的分布式发布订阅消息系统，当数据量不稳定，数据量大的时候想到它就对了。 zookeeper简介是一个分布式的，开放源码的分布式应用程序协调服务,很多地方用到, 最常见的是为集群提供基础的、高可用HA(High Availability)服务是kafka集群的基础依赖，同时也是hadoop系列中实现HA的基础组件。实现HDFS的NamaNode和YARN的Resource">
+  
+    <link rel="alternate" href="/atom.xml" title="最终幻想" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.ico">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">最终幻想</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">远离舒适区，忙碌起来！</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="搜索"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://alexguo.net"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-大数据日志分析系统-缓存组件kafka" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/12/18/大数据日志分析系统-缓存组件kafka/" class="article-date">
+  <time datetime="2018-12-18T07:18:28.000Z" itemprop="datePublished">2018-12-18</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/大数据/">大数据</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      大数据日志分析系统-缓存组件kafka
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="kafka简介"><a href="#kafka简介" class="headerlink" title="kafka简介"></a>kafka简介</h1><p>是一种高吞吐量的分布式发布订阅消息系统，当数据量不稳定，数据量大的时候想到它就对了。</p>
+<h1 id="zookeeper简介"><a href="#zookeeper简介" class="headerlink" title="zookeeper简介"></a>zookeeper简介</h1><p>是一个分布式的，开放源码的分布式应用程序协调服务,很多地方用到, 最常见的是为集群提供基础的、高可用HA(High Availability)服务<br>是kafka集群的基础依赖，同时也是hadoop系列中实现HA的基础组件。<br>实现HDFS的NamaNode和YARN的ResourceManager的HA,Spark实现HA，<br>HBase主要用ZooKeeper来实现HMaster选举与主备切换、系统容错、RootRegion管理、Region状态管理和分布式SplitWAL任务管理等。</p>
+<p>//===========================================================</p>
+<p>两种集群的配置相差不大</p>
+<h1 id="zookeeper集群配置："><a href="#zookeeper集群配置：" class="headerlink" title="zookeeper集群配置："></a>zookeeper集群配置：</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">ubuntu@sp1:~/kafka/config$ cat zookeeper.properties | grep -v &apos;#&apos;</span><br><span class="line">dataDir=/mnt/data3/zk</span><br><span class="line">clientPort=2181</span><br><span class="line">tickTime=2000</span><br><span class="line">initLimit=7</span><br><span class="line">syncLimit=4</span><br><span class="line">server.1=sp1:2888:3888</span><br><span class="line">server.2=sp2:2888:3888</span><br><span class="line">server.3=sp3:2888:3888</span><br><span class="line">server.4=sp4:2888:3888</span><br><span class="line">server.5=sp5:2888:3888</span><br><span class="line">server.6=sp6:2888:3888</span><br><span class="line">server.7=sp7:2888:3888</span><br></pre></td></tr></table></figure>
+<h2 id="强制杀死命令"><a href="#强制杀死命令" class="headerlink" title="强制杀死命令"></a>强制杀死命令</h2><p>ps aux |grep kafka |grep -v grep|cut -c 9-15 | xargs kill -9<br>ps aux |grep zookeeper |grep -v grep|cut -c 9-15 | xargs kill -9</p>
+<h1 id="kafka-集群配置："><a href="#kafka-集群配置：" class="headerlink" title="kafka 集群配置："></a>kafka 集群配置：</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">ubuntu@sp1:~/kafka/config$ cat consumer.properties | grep -v &apos;#&apos;</span><br><span class="line">zookeeper.connect=es1:2181,es2:2181,es3:2181,es4:2181,es5:2181</span><br><span class="line">zookeeper.connection.timeout.ms=6000</span><br><span class="line">group.id=test-consumer-group</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">ubuntu@sp1:~/kafka/config$ cat server.properties | grep -v &apos;#&apos;</span><br><span class="line">broker.id=1</span><br><span class="line">port=9092</span><br><span class="line">advertised.host.name=sp1</span><br><span class="line">listeners=PLAINTEXT://sp1-host-ip:9092  </span><br><span class="line">num.network.threads=10</span><br><span class="line">num.io.threads=8</span><br><span class="line">socket.send.buffer.bytes=102400</span><br><span class="line">socket.receive.buffer.bytes=102400</span><br><span class="line">socket.request.max.bytes=104857600</span><br><span class="line">log.dirs=/mnt/data3/kafka-logs</span><br><span class="line">num.partitions=20</span><br><span class="line">num.recovery.threads.per.data.dir=5</span><br><span class="line">log.retention.hours=8</span><br><span class="line">log.retention.bytes=53687091200</span><br><span class="line">log.segment.bytes=1073741824</span><br><span class="line">log.retention.check.interval.ms=300000</span><br><span class="line">log.cleaner.enable=false</span><br><span class="line">zookeeper.connect=sp1:2181,sp2:2181,sp3:2181,sp4:2181,sp5:2181,sp6:2181,sp7:2181</span><br><span class="line">zookeeper.connection.timeout.ms=6000</span><br><span class="line">delete.topic.enable=true</span><br><span class="line">auto.leader.rebalance.enable=true</span><br><span class="line">num.replica.fetchers=5</span><br></pre></td></tr></table></figure>
+<h1 id="启动命令："><a href="#启动命令：" class="headerlink" title="启动命令："></a>启动命令：</h1><h2 id="1-zookeeper启动"><a href="#1-zookeeper启动" class="headerlink" title="1.zookeeper启动"></a>1.zookeeper启动</h2><p>sp1 - sp7在Ubuntu用户下 执行<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/home/ubuntu/zookeeper-3.4.7/bin/zkServer.sh start</span><br></pre></td></tr></table></figure></p>
+<h2 id="jps检查存在"><a href="#jps检查存在" class="headerlink" title="jps检查存在"></a>jps检查存在</h2><p>QuorumPeerMain</p>
+<h2 id="状态查看"><a href="#状态查看" class="headerlink" title="状态查看"></a>状态查看</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/home/ubuntu/zookeeper-3.4.7/bin/zkServer.sh status</span><br></pre></td></tr></table></figure>
+<p>查看为一主动多从启动正常</p>
+<h2 id="文件查看"><a href="#文件查看" class="headerlink" title="文件查看"></a>文件查看</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/home/ubuntu/zookeeper-3.4.7/bin/zkCli.sh -server localhost:2181</span><br></pre></td></tr></table></figure>
+<p>进入客户端 ls / 等命令查看</p>
+<h1 id="2-kafka启动"><a href="#2-kafka启动" class="headerlink" title="2.kafka启动"></a>2.kafka启动</h1><h2 id="sp1到sp7执行"><a href="#sp1到sp7执行" class="headerlink" title="sp1到sp7执行"></a>sp1到sp7执行</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nohup /home/ubuntu/kafka/bin/kafka-server-start.sh /home/ubuntu/kafka/config/server.properties 2&gt;&amp;1 &gt; /home/ubuntu/kafka/logs/kafka.log &amp;</span><br></pre></td></tr></table></figure>
+<p>当然也可以这样远程执行<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh sp1 nohup /home/ubuntu/kafka/bin/kafka-server-start.sh /home/ubuntu/kafka/config/server.properties 2&gt;&amp;1 &gt; /home/ubuntu/kafka/logs/kafka.log &amp;</span><br></pre></td></tr></table></figure></p>
+<h2 id="检查"><a href="#检查" class="headerlink" title="检查"></a>检查</h2><p>~/kafka/bin/kafka-run-class.sh kafka.tools.ConsumerOffsetChecker –broker-info –group kafka_es –topic kafka_es –zookeeper localhost:2181</p>
+<p>就可以看机器是否正常了</p>
+<h1 id="注意："><a href="#注意：" class="headerlink" title="注意："></a>注意：</h1><p>很可能出现kafka个别分片堆积问题：例如现在kafka有35个分片，只有2个分片产生堆积，通过命令<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">~/kafka/bin/kafka-run-class.sh kafka.tools.ConsumerOffsetChecker --broker-info --group kafka_es --topic kafka_es --zookeeper localhost:2181</span><br></pre></td></tr></table></figure></p>
+<p>查看，我遇见过是消费线程小于分片数量（现象是用命令查看是不同的分片Pid 拥有相同的 Owner），这个时候增加消费者进程即可（我个人认为数据量大时消费者要多于分片数量  这样不容易出现挂掉一两个消费者出现分片被堆积的情况）
+　</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://alexguo.net/2018/12/18/大数据日志分析系统-缓存组件kafka/" data-id="cjti2wkre0021ngvw0qat64ij" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/kafka/">kafka</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2018/12/18/大数据日志分析系统-logstash/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          大数据日志分析系统-logstash
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/12/18/大数据日志分析系统-边缘节点日志上传-flume，filbeat-logstash-forward/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">大数据日志分析系统边缘节点日志上传-flume，filbeat,logstash-forward</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/android/">android</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/java/">java</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/linux/">linux</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/no-sql/">no sql</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/大数据/">大数据</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/家常/">家常</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/常用工具/">常用工具</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/数据库/">数据库</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/网络/">网络</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/EventBus/">EventBus</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NIO/">NIO</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/bin-log/">bin_log</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/">docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/elasticsearch/">elasticsearch</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/filebeat/">filebeat</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/flume/">flume</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/gitlab/">gitlab</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hbase/">hbase</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hdfs/">hdfs</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/http/">http</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java基础/">java基础</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/jvm/">jvm</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/kafka/">kafka</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux/">linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/logstash/">logstash</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/logstash-forward/">logstash-forward</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mongodb/">mongodb</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/">mysql</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/netty/">netty</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/pcloud/">pcloud</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/rocketMQ/">rocketMQ</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/spark/">spark</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/spring/">spring</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/spring-cloud/">spring cloud</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/spring-cloud-stream/">spring cloud stream</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/spring-rabbitMQ/">spring rabbitMQ</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/其他/">其他</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/数据采集/">数据采集</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/日志分析/">日志分析</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/EventBus/" style="font-size: 10px;">EventBus</a> <a href="/tags/NIO/" style="font-size: 10px;">NIO</a> <a href="/tags/bin-log/" style="font-size: 13.33px;">bin_log</a> <a href="/tags/docker/" style="font-size: 13.33px;">docker</a> <a href="/tags/elasticsearch/" style="font-size: 10px;">elasticsearch</a> <a href="/tags/filebeat/" style="font-size: 10px;">filebeat</a> <a href="/tags/flume/" style="font-size: 10px;">flume</a> <a href="/tags/git/" style="font-size: 10px;">git</a> <a href="/tags/gitlab/" style="font-size: 10px;">gitlab</a> <a href="/tags/hbase/" style="font-size: 10px;">hbase</a> <a href="/tags/hdfs/" style="font-size: 10px;">hdfs</a> <a href="/tags/http/" style="font-size: 10px;">http</a> <a href="/tags/java基础/" style="font-size: 10px;">java基础</a> <a href="/tags/jvm/" style="font-size: 13.33px;">jvm</a> <a href="/tags/kafka/" style="font-size: 10px;">kafka</a> <a href="/tags/linux/" style="font-size: 10px;">linux</a> <a href="/tags/logstash/" style="font-size: 10px;">logstash</a> <a href="/tags/logstash-forward/" style="font-size: 10px;">logstash-forward</a> <a href="/tags/mongodb/" style="font-size: 10px;">mongodb</a> <a href="/tags/mysql/" style="font-size: 16.67px;">mysql</a> <a href="/tags/netty/" style="font-size: 10px;">netty</a> <a href="/tags/pcloud/" style="font-size: 20px;">pcloud</a> <a href="/tags/rocketMQ/" style="font-size: 10px;">rocketMQ</a> <a href="/tags/spark/" style="font-size: 10px;">spark</a> <a href="/tags/spring/" style="font-size: 10px;">spring</a> <a href="/tags/spring-cloud/" style="font-size: 10px;">spring cloud</a> <a href="/tags/spring-cloud-stream/" style="font-size: 10px;">spring cloud stream</a> <a href="/tags/spring-rabbitMQ/" style="font-size: 10px;">spring rabbitMQ</a> <a href="/tags/其他/" style="font-size: 13.33px;">其他</a> <a href="/tags/数据采集/" style="font-size: 10px;">数据采集</a> <a href="/tags/日志分析/" style="font-size: 10px;">日志分析</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">十二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">十一月 2018</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2018/12/28/MySQL的binlog日志/">MySQL的binlog日志</a>
+          </li>
+        
+          <li>
+            <a href="/2018/12/28/大数据之数据采集方法/">大数据之数据采集方法</a>
+          </li>
+        
+          <li>
+            <a href="/2018/12/27/深入理解mongodb和hbase区别/">深入理解mongodb和hbase区别</a>
+          </li>
+        
+          <li>
+            <a href="/2018/12/19/大数据采集方案：mysql-binlog-注意点/">大数据采集方案：mysql-binlog 注意点</a>
+          </li>
+        
+          <li>
+            <a href="/2018/12/19/jvm常见问题知识/">jvm常见问题知识</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2019 Alex Guo<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

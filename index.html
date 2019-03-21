@@ -1,0 +1,1145 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  
+
+  
+  <title>最终幻想</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="一个程序员的心路。">
+<meta name="keywords" content="java web sql linux">
+<meta property="og:type" content="website">
+<meta property="og:title" content="最终幻想">
+<meta property="og:url" content="https://alexguo.net/index.html">
+<meta property="og:site_name" content="最终幻想">
+<meta property="og:description" content="一个程序员的心路。">
+<meta property="og:locale" content="zh-CN">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="最终幻想">
+<meta name="twitter:description" content="一个程序员的心路。">
+  
+    <link rel="alternate" href="/atom.xml" title="最终幻想" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.ico">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">最终幻想</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">远离舒适区，忙碌起来！</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="搜索"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://alexguo.net"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main">
+  
+    <article id="post-MySQL的binlog日志" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/12/28/MySQL的binlog日志/" class="article-date">
+  <time datetime="2018-12-28T06:58:46.000Z" itemprop="datePublished">2018-12-28</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/数据库/">数据库</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/12/28/MySQL的binlog日志/">MySQL的binlog日志</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="binlog-基本认识"><a href="#binlog-基本认识" class="headerlink" title="binlog 基本认识"></a>binlog 基本认识</h1><p>MySQL的二进制日志可以说是MySQL最重要的日志了，它记录了所有的DDL和DML(除了数据查询语句)语句，以事件形式记录，还包含语句所执行的消耗的时间，MySQL的二进制日志是事务安全型的。</p>
+<pre><code>一般来说开启二进制日志大概会有1%的性能损耗(参见MySQL官方中文手册 5.1.24版)。二进制有两个最重要的使用场景: 
+其一：MySQL Replication在Master端开启binlog，Mster把它的二进制日志传递给slaves来达到master-slave数据一致的目的。 
+其二：自然就是数据恢复了，通过使用mysqlbinlog工具来使恢复数据。
+
+二进制日志包括两类文件：二进制日志索引文件（文件名后缀为.index）用于记录所有的二进制文件，二进制日志文件（文件名后缀为.00000*）记录数据库所有的DDL和DML(除了数据查询语句)语句事件。 
+</code></pre><h1 id="一、开启binlog日志："><a href="#一、开启binlog日志：" class="headerlink" title="一、开启binlog日志："></a>一、开启binlog日志：</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">vi编辑打开mysql配置文件</span><br><span class="line">    # vi /usr/local/mysql/etc/my.cnf</span><br><span class="line">    在[mysqld] 区块</span><br><span class="line">    设置/添加 log-bin=mysql-bin  确认是打开状态(值 mysql-bin 是日志的基本名或前缀名)；</span><br><span class="line"></span><br><span class="line">    重启mysqld服务使配置生效</span><br><span class="line">    # pkill mysqld</span><br><span class="line">    # /usr/local/mysql/bin/mysqld_safe --user=mysql &amp;</span><br></pre></td></tr></table></figure>
+<h1 id="二、也可登录mysql服务器，通过mysql的变量配置表，查看二进制日志是否已开启-单词：variable-ˈveriəbəl-变量"><a href="#二、也可登录mysql服务器，通过mysql的变量配置表，查看二进制日志是否已开启-单词：variable-ˈveriəbəl-变量" class="headerlink" title="二、也可登录mysql服务器，通过mysql的变量配置表，查看二进制日志是否已开启 单词：variable[ˈvɛriəbəl] 变量"></a>二、也可登录mysql服务器，通过mysql的变量配置表，查看二进制日志是否已开启 单词：variable[ˈvɛriəbəl] 变量</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">登录服务器</span><br><span class="line">    # /usr/local/mysql/bin/mysql -uroot -p123456</span><br><span class="line"></span><br><span class="line">    mysql&gt; show variables like &apos;log_%&apos;; </span><br><span class="line">    +----------------------------------------+---------------------------------------+</span><br><span class="line">    | Variable_name                          | Value                                 |</span><br><span class="line">    +----------------------------------------+---------------------------------------+</span><br><span class="line">    | log_bin                                | ON                                    | ------&gt; ON表示已经开启binlog日志</span><br><span class="line">    | log_bin_basename                       | /usr/local/mysql/data/mysql-bin       |</span><br><span class="line">    | log_bin_index                          | /usr/local/mysql/data/mysql-bin.index |</span><br><span class="line">    | log_bin_trust_function_creators        | OFF                                   |</span><br><span class="line">    | log_bin_use_v1_row_events              | OFF                                   |</span><br><span class="line">    | log_error                              | /usr/local/mysql/data/martin.err      |</span><br><span class="line">    | log_output                             | FILE                                  |</span><br><span class="line">    | log_queries_not_using_indexes          | OFF                                   |</span><br><span class="line">    | log_slave_updates                      | OFF                                   |</span><br><span class="line">    | log_slow_admin_statements              | OFF                                   |</span><br><span class="line">    | log_slow_slave_statements              | OFF                                   |</span><br><span class="line">    | log_throttle_queries_not_using_indexes | 0                                     |</span><br><span class="line">    | log_warnings                           | 1                                     |</span><br><span class="line">    +----------------------------------------+---------------------------------------+</span><br></pre></td></tr></table></figure>
+<h1 id="三、常用binlog日志操作命令"><a href="#三、常用binlog日志操作命令" class="headerlink" title="三、常用binlog日志操作命令"></a>三、常用binlog日志操作命令</h1><h2 id="1-查看所有binlog日志列表"><a href="#1-查看所有binlog日志列表" class="headerlink" title="1.查看所有binlog日志列表"></a>1.查看所有binlog日志列表</h2><pre><code>mysql&gt; show master logs;
+</code></pre><h2 id="2-查看master状态，即最后-最新-一个binlog日志的编号名称，及其最后一个操作事件pos结束点-Position-值"><a href="#2-查看master状态，即最后-最新-一个binlog日志的编号名称，及其最后一个操作事件pos结束点-Position-值" class="headerlink" title="2.查看master状态，即最后(最新)一个binlog日志的编号名称，及其最后一个操作事件pos结束点(Position)值"></a>2.查看master状态，即最后(最新)一个binlog日志的编号名称，及其最后一个操作事件pos结束点(Position)值</h2><pre><code>mysql&gt; show master status;
+</code></pre><h2 id="3-刷新log日志，自此刻开始产生一个新编号的binlog日志文件"><a href="#3-刷新log日志，自此刻开始产生一个新编号的binlog日志文件" class="headerlink" title="3.刷新log日志，自此刻开始产生一个新编号的binlog日志文件"></a>3.刷新log日志，自此刻开始产生一个新编号的binlog日志文件</h2><pre><code>mysql&gt; flush logs;
+注：每当mysqld服务重启时，会自动执行此命令，刷新binlog日志；在mysqldump备份数据时加 -F 选项也会刷新binlog日志；
+</code></pre><h2 id="4-重置-清空-所有binlog日志"><a href="#4-重置-清空-所有binlog日志" class="headerlink" title="4.重置(清空)所有binlog日志"></a>4.重置(清空)所有binlog日志</h2><pre><code>mysql&gt; reset master;
+</code></pre><h1 id="四、查看某个binlog日志内容，常用有两种方式："><a href="#四、查看某个binlog日志内容，常用有两种方式：" class="headerlink" title="四、查看某个binlog日志内容，常用有两种方式："></a>四、查看某个binlog日志内容，常用有两种方式：</h1><h2 id="1-使用mysqlbinlog自带查看命令法："><a href="#1-使用mysqlbinlog自带查看命令法：" class="headerlink" title="1.使用mysqlbinlog自带查看命令法："></a>1.使用mysqlbinlog自带查看命令法：</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">注: binlog是二进制文件，普通文件查看器cat more vi等都无法打开，必须使用自带的 mysqlbinlog 命令查看</span><br><span class="line">    binlog日志与数据库文件在同目录中(我的环境配置安装是选择在/usr/local/mysql/data中)</span><br><span class="line">在MySQL5.5以下版本使用mysqlbinlog命令时如果报错，就加上 “--no-defaults”选项</span><br><span class="line">    </span><br><span class="line"># /usr/local/mysql/bin/mysqlbinlog /usr/local/mysql/data/mysql-bin.000013</span><br><span class="line">  下面截取一个片段分析：(得知可以用–base64-output=DECODE-ROWS -v查看出来sql语句)</span><br><span class="line"></span><br><span class="line">   ...............................................................................</span><br><span class="line">   # at 552</span><br><span class="line">   #131128 17:50:46 server id 1  end_log_pos 665   Query   thread_id=11    exec_time=0     error_code=0 ----&gt;执行时间:17:50:46；pos点:665</span><br><span class="line">   SET TIMESTAMP=1385632246/*!*/;</span><br><span class="line">   update zyyshop.stu set name=&apos;李四&apos; where id=4              ----&gt;执行的SQL</span><br><span class="line">   /*!*/;</span><br><span class="line">   # at 665</span><br><span class="line">   #131128 17:50:46 server id 1  end_log_pos 692   Xid = 1454 ----&gt;执行时间:17:50:46；pos点:692 </span><br><span class="line">   ...............................................................................</span><br><span class="line"></span><br><span class="line">   注: server id 1     数据库主机的服务号；</span><br><span class="line">       end_log_pos 665 pos点</span><br><span class="line">       thread_id=11    线程号</span><br></pre></td></tr></table></figure>
+<h2 id="2-上面这种办法读取出binlog日志的全文内容较多，不容易分辨查看pos点信息，这里介绍一种更为方便的查询命令："><a href="#2-上面这种办法读取出binlog日志的全文内容较多，不容易分辨查看pos点信息，这里介绍一种更为方便的查询命令：" class="headerlink" title="2.上面这种办法读取出binlog日志的全文内容较多，不容易分辨查看pos点信息，这里介绍一种更为方便的查询命令："></a>2.上面这种办法读取出binlog日志的全文内容较多，不容易分辨查看pos点信息，这里介绍一种更为方便的查询命令：</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show binlog events [IN &apos;log_name&apos;] [FROM pos] [LIMIT [offset,] row_count];</span><br><span class="line"></span><br><span class="line">       选项解析：</span><br><span class="line">         IN &apos;log_name&apos;   指定要查询的binlog文件名(不指定就是第一个binlog文件)</span><br><span class="line">         FROM pos        指定从哪个pos起始点开始查起(不指定就是从整个文件首个pos点开始算)</span><br><span class="line">         LIMIT [offset,] 偏移量(不指定就是0)</span><br><span class="line">         row_count       查询总条数(不指定就是所有行)</span><br><span class="line"></span><br><span class="line">       截取部分查询结果：</span><br><span class="line">       *************************** 20. row ***************************</span><br><span class="line">          Log_name: mysql-bin.000021  ----------------------------------------------&gt; 查询的binlog日志文件名</span><br><span class="line">               Pos: 11197 ----------------------------------------------------------&gt; pos起始点:</span><br><span class="line">        Event_type: Query ----------------------------------------------------------&gt; 事件类型：Query</span><br><span class="line">         Server_id: 1 --------------------------------------------------------------&gt; 标识是由哪台服务器执行的</span><br><span class="line">       End_log_pos: 11308 ----------------------------------------------------------&gt; pos结束点:11308(即：下行的pos起始点)</span><br><span class="line">              Info: use `zyyshop`; INSERT INTO `team2` VALUES (0,345,&apos;asdf8er5&apos;) ---&gt; 执行的sql语句</span><br><span class="line">       *************************** 21. row ***************************</span><br><span class="line">          Log_name: mysql-bin.000021</span><br><span class="line">               Pos: 11308 ----------------------------------------------------------&gt; pos起始点:11308(即：上行的pos结束点)</span><br><span class="line">        Event_type: Query</span><br><span class="line">         Server_id: 1</span><br><span class="line">       End_log_pos: 11417</span><br><span class="line">              Info: use `zyyshop`; /*!40000 ALTER TABLE `team2` ENABLE KEYS */</span><br><span class="line">       *************************** 22. row ***************************</span><br><span class="line">          Log_name: mysql-bin.000021</span><br><span class="line">               Pos: 11417</span><br><span class="line">        Event_type: Query</span><br><span class="line">         Server_id: 1</span><br><span class="line">       End_log_pos: 11510</span><br><span class="line">              Info: use `zyyshop`; DROP TABLE IF EXISTS `type`</span><br><span class="line"></span><br><span class="line">这条语句可以将指定的binlog日志文件，分成有效事件行的方式返回，并可使用limit指定pos点的起始偏移，查询条数；</span><br></pre></td></tr></table></figure>
+<h3 id="A-查询第一个-最早-的binlog日志："><a href="#A-查询第一个-最早-的binlog日志：" class="headerlink" title="A.查询第一个(最早)的binlog日志："></a>A.查询第一个(最早)的binlog日志：</h3><pre><code>mysql&gt; show binlog events\G; 
+</code></pre><h3 id="B-指定查询-mysql-bin-000021-这个文件："><a href="#B-指定查询-mysql-bin-000021-这个文件：" class="headerlink" title="B.指定查询 mysql-bin.000021 这个文件："></a>B.指定查询 mysql-bin.000021 这个文件：</h3><pre><code>mysql&gt; show binlog events in &apos;mysql-bin.000021&apos;\G;
+</code></pre><h3 id="C-指定查询-mysql-bin-000021-这个文件，从pos点-8224开始查起："><a href="#C-指定查询-mysql-bin-000021-这个文件，从pos点-8224开始查起：" class="headerlink" title="C.指定查询 mysql-bin.000021 这个文件，从pos点:8224开始查起："></a>C.指定查询 mysql-bin.000021 这个文件，从pos点:8224开始查起：</h3><pre><code>mysql&gt; show binlog events in &apos;mysql-bin.000021&apos; from 8224\G;
+</code></pre><h3 id="D-指定查询-mysql-bin-000021-这个文件，从pos点-8224开始查起，查询10条"><a href="#D-指定查询-mysql-bin-000021-这个文件，从pos点-8224开始查起，查询10条" class="headerlink" title="D.指定查询 mysql-bin.000021 这个文件，从pos点:8224开始查起，查询10条"></a>D.指定查询 mysql-bin.000021 这个文件，从pos点:8224开始查起，查询10条</h3><pre><code>mysql&gt; show binlog events in &apos;mysql-bin.000021&apos; from 8224 limit 10\G;
+</code></pre><h3 id="E-指定查询-mysql-bin-000021-这个文件，从pos点-8224开始查起，偏移2行，查询10条"><a href="#E-指定查询-mysql-bin-000021-这个文件，从pos点-8224开始查起，偏移2行，查询10条" class="headerlink" title="E.指定查询 mysql-bin.000021 这个文件，从pos点:8224开始查起，偏移2行，查询10条"></a>E.指定查询 mysql-bin.000021 这个文件，从pos点:8224开始查起，偏移2行，查询10条</h3><pre><code>mysql&gt; show binlog events in &apos;mysql-bin.000021&apos; from 8224 limit 2,10\G;
+</code></pre><h1 id="五、恢复binlog日志实验-zyyshop是数据库"><a href="#五、恢复binlog日志实验-zyyshop是数据库" class="headerlink" title="五、恢复binlog日志实验(zyyshop是数据库)"></a>五、恢复binlog日志实验(zyyshop是数据库)</h1><h2 id="1-假设现在是凌晨4-00，我的计划任务开始执行一次完整的数据库备份："><a href="#1-假设现在是凌晨4-00，我的计划任务开始执行一次完整的数据库备份：" class="headerlink" title="1.假设现在是凌晨4:00，我的计划任务开始执行一次完整的数据库备份："></a>1.假设现在是凌晨4:00，我的计划任务开始执行一次完整的数据库备份：</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">将zyyshop数据库备份到 /root/BAK.zyyshop.sql 文件中：</span><br><span class="line"># /usr/local/mysql/bin/mysqldump -uroot -p123456 -lF --log-error=/root/myDump.err -B zyyshop &gt; /root/BAK.zyyshop.sql</span><br><span class="line">  ......</span><br><span class="line"></span><br><span class="line">  大约过了若干分钟，备份完成了，我不用担心数据丢失了，因为我有备份了，嘎嘎~~~</span><br><span class="line"></span><br><span class="line">由于我使用了-F选项，当备份工作刚开始时系统会刷新log日志，产生新的binlog日志来记录备份之后的数据库“增删改”操作，查看一下：</span><br><span class="line">mysql&gt; show master status;</span><br><span class="line">+------------------+----------+--------------+------------------+</span><br><span class="line">| File             | Position | Binlog_Do_DB | Binlog_Ignore_DB |</span><br><span class="line">+------------------+----------+--------------+------------------+</span><br><span class="line">| mysql-bin.000023 |      120 |              |                  |</span><br><span class="line">+------------------+----------+--------------+------------------+</span><br><span class="line">也就是说， mysql-bin.000023 是用来记录4:00之后对数据库的所有“增删改”操作。</span><br></pre></td></tr></table></figure>
+<h2 id="2-早9-00上班了，业务的需求会对数据库进行各种“增删改”操作"><a href="#2-早9-00上班了，业务的需求会对数据库进行各种“增删改”操作" class="headerlink" title="2.早9:00上班了，业务的需求会对数据库进行各种“增删改”操作~~~"></a>2.早9:00上班了，业务的需求会对数据库进行各种“增删改”操作<del>~</del>~~</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line">@ 比如：创建一个学生表并插入、修改了数据等等：</span><br><span class="line">  CREATE TABLE IF NOT EXISTS `tt` (</span><br><span class="line">    `id` int(10) unsigned NOT NULL AUTO_INCREMENT,</span><br><span class="line">    `name` varchar(16) NOT NULL,</span><br><span class="line">    `sex` enum(&apos;m&apos;,&apos;w&apos;) NOT NULL DEFAULT &apos;m&apos;,</span><br><span class="line">    `age` tinyint(3) unsigned NOT NULL,</span><br><span class="line">    `classid` char(6) DEFAULT NULL,</span><br><span class="line">    PRIMARY KEY (`id`)</span><br><span class="line">   ) ENGINE=InnoDB DEFAULT CHARSET=utf8;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">导入实验数据</span><br><span class="line">mysql&gt; insert into zyyshop.tt(`name`,`sex`,`age`,`classid`) values(&apos;yiyi&apos;,&apos;w&apos;,20,&apos;cls1&apos;),(&apos;xiaoer&apos;,&apos;m&apos;,22,&apos;cls3&apos;),(&apos;zhangsan&apos;,&apos;w&apos;,21,&apos;cls5&apos;),(&apos;lisi&apos;,&apos;m&apos;,20,&apos;cls4&apos;),(&apos;wangwu&apos;,&apos;w&apos;,26,&apos;cls6&apos;);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">查看数据</span><br><span class="line">mysql&gt; select * from zyyshop.tt;</span><br><span class="line">+----+----------+-----+-----+---------+</span><br><span class="line">| id | name     | sex | age | classid |</span><br><span class="line">+----+----------+-----+-----+---------+</span><br><span class="line">|  1 | yiyi     | w   |  20 | cls1    |</span><br><span class="line">|  2 | xiaoer   | m   |  22 | cls3    |</span><br><span class="line">|  3 | zhangsan | w   |  21 | cls5    |</span><br><span class="line">|  4 | lisi     | m   |  20 | cls4    |</span><br><span class="line">|  5 | wangwu   | w   |  26 | cls6    |</span><br><span class="line">+----+----------+-----+-----+---------+</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">中午时分又执行了修改数据操作</span><br><span class="line">mysql&gt; update zyyshop.tt set name=&apos;李四&apos; where id=4;</span><br><span class="line">mysql&gt; update zyyshop.tt set name=&apos;小二&apos; where id=2;</span><br><span class="line"></span><br><span class="line">修改后的结果：</span><br><span class="line">mysql&gt; select * from zyyshop.tt;</span><br><span class="line">+----+----------+-----+-----+---------+</span><br><span class="line">| id | name     | sex | age | classid |</span><br><span class="line">+----+----------+-----+-----+---------+</span><br><span class="line">|  1 | yiyi     | w   |  20 | cls1    |</span><br><span class="line">|  2 | 小二     | m   |  22 | cls3    |</span><br><span class="line">|  3 | zhangsan | w   |  21 | cls5    |</span><br><span class="line">|  4 | 李四     | m   |  20 | cls4    |</span><br><span class="line">|  5 | wangwu   | w   |  26 | cls6    |</span><br><span class="line">+----+----------+-----+-----+---------+</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">假设此时是下午18:00，莫名地执行了一条悲催的SQL语句，整个数据库都没了：</span><br><span class="line">mysql&gt; drop database zyyshop;</span><br></pre></td></tr></table></figure>
+<h2 id="3-此刻杯具了，别慌！先仔细查看最后一个binlog日志，并记录下关键的pos点，到底是哪个pos点的操作导致了数据库的破坏-通常在最后几步-；"><a href="#3-此刻杯具了，别慌！先仔细查看最后一个binlog日志，并记录下关键的pos点，到底是哪个pos点的操作导致了数据库的破坏-通常在最后几步-；" class="headerlink" title="3.此刻杯具了，别慌！先仔细查看最后一个binlog日志，并记录下关键的pos点，到底是哪个pos点的操作导致了数据库的破坏(通常在最后几步)；"></a>3.此刻杯具了，别慌！先仔细查看最后一个binlog日志，并记录下关键的pos点，到底是哪个pos点的操作导致了数据库的破坏(通常在最后几步)；</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">      备份一下最后一个binlog日志文件：</span><br><span class="line">      # ll /usr/local/mysql/data | grep mysql-bin</span><br><span class="line">      # cp -v /usr/local/mysql/data/mysql-bin.000023 /root/</span><br><span class="line"></span><br><span class="line">      此时执行一次刷新日志索引操作，重新开始新的binlog日志记录文件，理论说 mysql-bin.000023 这个文件不会再有后续写入了(便于我们分析原因及查找pos点)，以后所有数据库操作都会写入到下一个日志文件；</span><br><span class="line">      mysql&gt; flush logs;</span><br><span class="line">      mysql&gt; show master status;</span><br><span class="line">```     </span><br><span class="line"></span><br><span class="line">##    4.读取binlog日志，分析问题</span><br><span class="line">``` </span><br><span class="line">      方式一：使用mysqlbinlog读取binlog日志：</span><br><span class="line">        # /usr/local/mysql/bin/mysqlbinlog  /usr/local/mysql/data/mysql-bin.000023</span><br><span class="line"></span><br><span class="line">      方式二：登录服务器，并查看(推荐)：</span><br><span class="line">        mysql&gt; show binlog events in &apos;mysql-bin.000023&apos;;</span><br><span class="line">        </span><br><span class="line">        以下为末尾片段：</span><br><span class="line">        +------------------+------+------------+-----------+-------------+------------------------------------------------------------+</span><br><span class="line">        | Log_name         | Pos  | Event_type | Server_id | End_log_pos | Info                                                       |</span><br><span class="line">        +------------------+------+------------+-----------+-------------+------------------------------------------------------------+</span><br><span class="line">        | mysql-bin.000023 |  922 | Xid        |         1 |         953 | COMMIT /* xid=3820 */                                      |</span><br><span class="line">        | mysql-bin.000023 |  953 | Query      |         1 |        1038 | BEGIN                                                      |</span><br><span class="line">        | mysql-bin.000023 | 1038 | Query      |         1 |        1164 | use `zyyshop`; update zyyshop.tt set name=&apos;李四&apos; where id=4|</span><br><span class="line">        | mysql-bin.000023 | 1164 | Xid        |         1 |        1195 | COMMIT /* xid=3822 */                                      |</span><br><span class="line">        | mysql-bin.000023 | 1195 | Query      |         1 |        1280 | BEGIN                                                      |</span><br><span class="line">        | mysql-bin.000023 | 1280 | Query      |         1 |        1406 | use `zyyshop`; update zyyshop.tt set name=&apos;小二&apos; where id=2|</span><br><span class="line">        | mysql-bin.000023 | 1406 | Xid        |         1 |        1437 | COMMIT /* xid=3823 */                                      |</span><br><span class="line">        | mysql-bin.000023 | 1437 | Query      |         1 |        1538 | drop database zyyshop                                      |</span><br><span class="line">        +------------------+------+------------+-----------+-------------+------------------------------------------------------------+</span><br><span class="line"></span><br><span class="line">        通过分析，造成数据库破坏的pos点区间是介于 1437--1538 之间，只要恢复到1437前就可。</span><br></pre></td></tr></table></figure>
+<h2 id="5-现在把凌晨备份的数据恢复："><a href="#5-现在把凌晨备份的数据恢复：" class="headerlink" title="5.现在把凌晨备份的数据恢复："></a>5.现在把凌晨备份的数据恢复：</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"># /usr/local/mysql/bin/mysql -uroot -p123456 -v &lt; /root/BAK.zyyshop.sql;</span><br><span class="line"></span><br><span class="line">注: 至此截至当日凌晨(4:00)前的备份数据都恢复了。</span><br><span class="line">    但今天一整天(4:00--18:00)的数据肿么办呢？就得从前文提到的 mysql-bin.000023 新日志做文章了......</span><br></pre></td></tr></table></figure>
+<h2 id="6-从binlog日志恢复数据"><a href="#6-从binlog日志恢复数据" class="headerlink" title="6.从binlog日志恢复数据"></a>6.从binlog日志恢复数据</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">恢复语法格式：</span><br><span class="line"># mysqlbinlog mysql-bin.0000xx | mysql -u用户名 -p密码 数据库名</span><br><span class="line"></span><br><span class="line">  常用选项：</span><br><span class="line">    --start-position=953                   起始pos点</span><br><span class="line">    --stop-position=1437                   结束pos点</span><br><span class="line">    --start-datetime=&quot;2013-11-29 13:18:54&quot; 起始时间点</span><br><span class="line">    --stop-datetime=&quot;2013-11-29 13:21:53&quot;  结束时间点</span><br><span class="line">    --database=zyyshop                     指定只恢复zyyshop数据库(一台主机上往往有多个数据库，只限本地log日志)</span><br><span class="line">      </span><br><span class="line">  不常用选项：    </span><br><span class="line">    -u --user=name              Connect to the remote server as username.连接到远程主机的用户名</span><br><span class="line">    -p --password[=name]        Password to connect to remote server.连接到远程主机的密码</span><br><span class="line">    -h --host=name              Get the binlog from server.从远程主机上获取binlog日志</span><br><span class="line">    --read-from-remote-server   Read binary logs from a MySQL server.从某个MySQL服务器上读取binlog日志</span><br></pre></td></tr></table></figure>
+<h1 id="小结：实际是将读出的binlog日志内容，通过管道符传递给mysql命令。这些命令、文件尽量写成绝对路径；"><a href="#小结：实际是将读出的binlog日志内容，通过管道符传递给mysql命令。这些命令、文件尽量写成绝对路径；" class="headerlink" title="小结：实际是将读出的binlog日志内容，通过管道符传递给mysql命令。这些命令、文件尽量写成绝对路径；"></a>小结：实际是将读出的binlog日志内容，通过管道符传递给mysql命令。这些命令、文件尽量写成绝对路径；</h1><h2 id="A-完全恢复-本例不靠谱，因为最后那条-drop-database-zyyshop-也在日志里，必须想办法把这条破坏语句排除掉，做部分恢复"><a href="#A-完全恢复-本例不靠谱，因为最后那条-drop-database-zyyshop-也在日志里，必须想办法把这条破坏语句排除掉，做部分恢复" class="headerlink" title="A.完全恢复(本例不靠谱，因为最后那条 drop database zyyshop 也在日志里，必须想办法把这条破坏语句排除掉，做部分恢复)"></a>A.完全恢复(本例不靠谱，因为最后那条 drop database zyyshop 也在日志里，必须想办法把这条破坏语句排除掉，做部分恢复)</h2><pre><code># /usr/local/mysql/bin/mysqlbinlog  /usr/local/mysql/data/mysql-bin.000021 | /usr/local/mysql/bin/mysql -uroot -p123456 -v zyyshop 
+</code></pre><h2 id="B-指定pos结束点恢复-部分恢复-："><a href="#B-指定pos结束点恢复-部分恢复-：" class="headerlink" title="B.指定pos结束点恢复(部分恢复)："></a>B.指定pos结束点恢复(部分恢复)：</h2><pre><code>@ --stop-position=953 pos结束点
+注：此pos结束点介于“导入实验数据”与更新“name=&apos;李四&apos;”之间，这样可以恢复到更改“name=&apos;李四&apos;”之前的“导入测试数据”
+# /usr/local/mysql/bin/mysqlbinlog --stop-position=953 --database=zyyshop /usr/local/mysql/data/mysql-bin.000023 | /usr/local/mysql/bin/mysql -uroot -p123456 -v zyyshop
+
+在另一终端登录查看结果(成功恢复了)：
+mysql&gt; select * from zyyshop.tt;
++----+----------+-----+-----+---------+
+| id | name     | sex | age | classid |
++----+----------+-----+-----+---------+
+|  1 | yiyi     | w   |  20 | cls1    |
+|  2 | xiaoer   | m   |  22 | cls3    |
+|  3 | zhangsan | w   |  21 | cls5    |
+|  4 | lisi     | m   |  20 | cls4    |
+|  5 | wangwu   | w   |  26 | cls6    |
++----+----------+-----+-----+---------+
+</code></pre><h2 id="C-指定pso点区间恢复-部分恢复-："><a href="#C-指定pso点区间恢复-部分恢复-：" class="headerlink" title="C.指定pso点区间恢复(部分恢复)："></a>C.指定pso点区间恢复(部分恢复)：</h2><pre><code>更新 name=&apos;李四&apos; 这条数据，日志区间是Pos[1038] --&gt; End_log_pos[1164]，按事务区间是：Pos[953] --&gt; End_log_pos[1195]；
+
+更新 name=&apos;小二&apos; 这条数据，日志区间是Pos[1280] --&gt; End_log_pos[1406]，按事务区间是：Pos[1195] --&gt; End_log_pos[1437]；
+
+c1.单独恢复 name=&apos;李四&apos; 这步操作，可这样：
+   # /usr/local/mysql/bin/mysqlbinlog --start-position=1038 --stop-position=1164 --database=zyyshop  /usr/local/mysql/data/mysql-bin.000023 | /usr/local/mysql/bin/mysql -uroot -p123456 -v zyyshop
+
+   也可以按事务区间单独恢复，如下：
+   # /usr/local/mysql/bin/mysqlbinlog --start-position=953 --stop-position=1195 --database=zyyshop  /usr/local/mysql/data/mysql-bin.000023 | /usr/local/mysql/bin/mysql -uroot -p123456 -v zyyshop
+
+
+c2.单独恢复 name=&apos;小二&apos; 这步操作，可这样：
+   # /usr/local/mysql/bin/mysqlbinlog --start-position=1280 --stop-position=1406 --database=zyyshop  /usr/local/mysql/data/mysql-bin.000023 | /usr/local/mysql/bin/mysql -uroot -p123456 -v zyyshop
+
+   也可以按事务区间单独恢复，如下：
+   # /usr/local/mysql/bin/mysqlbinlog --start-position=1195 --stop-position=1437 --database=zyyshop  /usr/local/mysql/data/mysql-bin.000023 | /usr/local/mysql/bin/mysql -uroot -p123456 -v zyyshop
+
+
+c3.将 name=&apos;李四&apos;、name=&apos;小二&apos; 多步操作一起恢复，需要按事务区间，可这样：
+   # /usr/local/mysql/bin/mysqlbinlog --start-position=953 --stop-position=1437 --database=zyyshop  /usr/local/mysql/data/mysql-bin.000023 | /usr/local/mysql/bin/mysql -uroot -p123456 -v zyyshop
+</code></pre><h2 id="D-在另一终端登录查看目前结果-两名称也恢复了-："><a href="#D-在另一终端登录查看目前结果-两名称也恢复了-：" class="headerlink" title="D.在另一终端登录查看目前结果(两名称也恢复了)："></a>D.在另一终端登录查看目前结果(两名称也恢复了)：</h2><pre><code>mysql&gt; select * from zyyshop.tt;
++----+----------+-----+-----+---------+
+| id | name     | sex | age | classid |
++----+----------+-----+-----+---------+
+|  1 | yiyi     | w   |  20 | cls1    |
+|  2 | 小二     | m   |  22 | cls3    |
+|  3 | zhangsan | w   |  21 | cls5    |
+|  4 | 李四     | m   |  20 | cls4    |
+|  5 | wangwu   | w   |  26 | cls6    |
++----+----------+-----+-----+---------+
+</code></pre><h2 id="E-也可指定时间区间恢复-部分恢复-：除了用pos点的办法进行恢复，也可以通过指定时间区间进行恢复，按时间恢复需要用mysqlbinlog命令读取binlog日志内容，找时间节点。"><a href="#E-也可指定时间区间恢复-部分恢复-：除了用pos点的办法进行恢复，也可以通过指定时间区间进行恢复，按时间恢复需要用mysqlbinlog命令读取binlog日志内容，找时间节点。" class="headerlink" title="E.也可指定时间区间恢复(部分恢复)：除了用pos点的办法进行恢复，也可以通过指定时间区间进行恢复，按时间恢复需要用mysqlbinlog命令读取binlog日志内容，找时间节点。"></a>E.也可指定时间区间恢复(部分恢复)：除了用pos点的办法进行恢复，也可以通过指定时间区间进行恢复，按时间恢复需要用mysqlbinlog命令读取binlog日志内容，找时间节点。</h2><pre><code>  比如，我把刚恢复的tt表删除掉，再用时间区间点恢复
+  mysql&gt; drop table tt;
+
+  @ --start-datetime=&quot;2013-11-29 13:18:54&quot;  起始时间点
+  @ --stop-datetime=&quot;2013-11-29 13:21:53&quot;   结束时间点
+
+  # /usr/local/mysql/bin/mysqlbinlog --start-datetime=&quot;2013-11-29 13:18:54&quot; --stop-datetime=&quot;2013-11-29 13:21:53&quot; --database=zyyshop /usr/local/mysql/data/mysql-bin.000021 | /usr/local/mysql/bin/mysql -uroot -p123456 -v zyyshop
+
+总结：所谓恢复，就是让mysql将保存在binlog日志中指定段落区间的sql语句逐个重新执行一次而已。
+</code></pre>
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://alexguo.net/2018/12/28/MySQL的binlog日志/" data-id="cjti2wksm004bngvwmjhxq82x" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/bin-log/">bin_log</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mysql/">mysql</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-大数据之数据采集方法" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/12/28/大数据之数据采集方法/" class="article-date">
+  <time datetime="2018-12-28T02:53:11.000Z" itemprop="datePublished">2018-12-28</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/大数据/">大数据</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/12/28/大数据之数据采集方法/">大数据之数据采集方法</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h1><p>数据源的分类，大体可以分为三类：结构化数据，半结构化数据，非结构化数据</p>
+<p>首先，我们面临的数据源多而杂，有来自公司自有平台的数据，来自第三方现有的数据，来自通过爬取获取的数据。</p>
+<h1 id="自有平台数据的采集"><a href="#自有平台数据的采集" class="headerlink" title="自有平台数据的采集"></a>自有平台数据的采集</h1><p>自有平台的数据包括：自有系统中的数据和各个部门手动整理的历史数据<br>（1）自有系统的数据，存放在oracle数据库中，而我们抽取的数据统一放在一个数据平台，数据平台采用的数据库为mongodb。所以自有系统的数据采集，关键是如何从oracle到mongodb中。</p>
+<h2 id="如果采集的数据对实时性要求比较高，那么采用ogg实时迁移方案。"><a href="#如果采集的数据对实时性要求比较高，那么采用ogg实时迁移方案。" class="headerlink" title="如果采集的数据对实时性要求比较高，那么采用ogg实时迁移方案。"></a>如果采集的数据对实时性要求比较高，那么采用ogg实时迁移方案。</h2><p>oracle to oracle迁移方案<br>oracle to mongodb迁移方案</p>
+<h2 id="如果采集数据对实时性要求不高，那么采用定时的迁移方案：使用etl工具进行数据迁移（spoon）"><a href="#如果采集数据对实时性要求不高，那么采用定时的迁移方案：使用etl工具进行数据迁移（spoon）" class="headerlink" title="如果采集数据对实时性要求不高，那么采用定时的迁移方案：使用etl工具进行数据迁移（spoon）"></a>如果采集数据对实时性要求不高，那么采用定时的迁移方案：使用etl工具进行数据迁移（spoon）</h2><p>（2）自有数据，还有一部分是以csv或txt的形式存在</p>
+<h2 id="如果对实时性要求比较高：使用flume对日志进行收集，然后存放的mongodb中"><a href="#如果对实时性要求比较高：使用flume对日志进行收集，然后存放的mongodb中" class="headerlink" title="如果对实时性要求比较高：使用flume对日志进行收集，然后存放的mongodb中"></a>如果对实时性要求比较高：使用flume对日志进行收集，然后存放的mongodb中</h2><h2 id="如果对实时性要求不高：使用mongodbimport工具导入mongodb即可"><a href="#如果对实时性要求不高：使用mongodbimport工具导入mongodb即可" class="headerlink" title="如果对实时性要求不高：使用mongodbimport工具导入mongodb即可"></a>如果对实时性要求不高：使用mongodbimport工具导入mongodb即可</h2><h1 id="第三方现有数据的采集半结构化数据"><a href="#第三方现有数据的采集半结构化数据" class="headerlink" title="第三方现有数据的采集半结构化数据"></a>第三方现有数据的采集半结构化数据</h1><p>仅有自有的数据是不足以支撑业务需求的分析，所以收集第三方数据是必须的，第三方的数据来源就多种多样了，大体可以二类：来自数据库中的半结构化数据，来自文件的半结构化数据</p>
+<h2 id="如果数据来自关系型数据库mysql或oracle，并且提供的是dmp文件，那么就需要将获取的数据存入到mongodb。这里提供两种思路："><a href="#如果数据来自关系型数据库mysql或oracle，并且提供的是dmp文件，那么就需要将获取的数据存入到mongodb。这里提供两种思路：" class="headerlink" title="如果数据来自关系型数据库mysql或oracle，并且提供的是dmp文件，那么就需要将获取的数据存入到mongodb。这里提供两种思路："></a>如果数据来自关系型数据库mysql或oracle，并且提供的是dmp文件，那么就需要将获取的数据存入到mongodb。这里提供两种思路：</h2><p>（1）先将数据存入oracle或mysql，然后使用上述迁移方案完成数据的采集<br>（2）直接将获取的数据，使用工具导入到oracle<br>如果数据提供的是txt或csv文件，那么直接使用mongoimport导入mongodb</p>
+<h2 id="非结构化数据采集"><a href="#非结构化数据采集" class="headerlink" title="非结构化数据采集"></a>非结构化数据采集</h2><p>这一节，没多少要讲的。因为没有接触很深，但是后续是个必须的过程。使用python爬取各种数据，存储成csv或txt文件<br>爬取的文件，再使用mongodbimport导入mongodb中</p>
+<p>由于要提供数据的可视化和搜索平台，建议使用ELK的技术栈，所以数据的收集使用Logstash
+　</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://alexguo.net/2018/12/28/大数据之数据采集方法/" data-id="cjti2wkr5001gngvwhriqyze1" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/数据采集/">数据采集</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-深入理解mongodb和hbase区别" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/12/27/深入理解mongodb和hbase区别/" class="article-date">
+  <time datetime="2018-12-27T02:28:44.000Z" itemprop="datePublished">2018-12-27</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/no-sql/">no sql</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/12/27/深入理解mongodb和hbase区别/">深入理解mongodb和hbase区别</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>想要做数据分析，免费的growing IO。它的分析仅限于界面跳转的转化率，不能详细地分析业务数据。<br>我研究了一个需要埋点的产品，搞明白他们是在每个接口的调用埋点，将用户对接口的调用行为记录下来，进行分析。由于接口众多，每个接口的数据都不同。</p>
+<p>可以充分利用hbase宽表的特性，在一行中定义一个通用的字段来标示当前行的数据类型，操作人，然后定义不同的字段来记录每一种数据。在插入数据的时候，每一行只插入当前类型和当前数据。由于hbase的宽表特性，可以容纳上百万列。可以将一家公司所有的接口访问数据都记录到一张无限大的表中，再配合辅助的用户表，就可以在各种纬度上分析用户的行为了。<br>分析了他们的表结构，我想用mongodb也可以做同样的事情，并且mongo比hbase好的地方在于，他入门门槛相对较低，然后在索引方面，检索的速度远比hbase那种查询要快多了。hbase只能要么按照主键范围查询，要么全表检索。为什么大的互联网公司都在推行hbase呢，这个是困扰我的地方。问了一个前腾讯员工，搞明白了两者的区别。<br>原因就在于写入的速度，hbase由于只维护一个主键，写入的速度要比mongodb这种要维护所有索引的数据库快多了。hbase占用两台机器能完成的事情，mongodb要占用更多的机器，每台机器按一年20000的费用，几百台下来就是一笔很大的费用。但是代价就是hbase记录下东西以后，只能事后通过全表检索或按照索引范围的方式进行整体分析，而不能对具体每个人的数据进行实时分析，更强调数据分析能力而不是实时数据查询能力，因此各有千秋吧。像用户行为分析的这种，一开始产品经理可能会具体看某一个人的数据，但是新鲜过后，只会看程序的分析结果了。因此从经济的角度出发，对于用户行为分析这种不需要实时数据的需求来说，hbase+mysql就可以用最经济的方式解决了。mongodb比较适合需要实时返回数据的大数据应用。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://alexguo.net/2018/12/27/深入理解mongodb和hbase区别/" data-id="cjti2wkrl002dngvw33uq0p21" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mongodb/">mongodb</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-大数据采集方案：mysql-binlog-注意点" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/12/19/大数据采集方案：mysql-binlog-注意点/" class="article-date">
+  <time datetime="2018-12-19T09:13:13.000Z" itemprop="datePublished">2018-12-19</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/大数据/">大数据</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/12/19/大数据采集方案：mysql-binlog-注意点/">大数据采集方案：mysql-binlog 注意点</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="概要"><a href="#概要" class="headerlink" title="概要"></a>概要</h1><p>在大数据时代，数据研发人员总是想把各类数据采集到我们的数据仓库。最典型的方案是日志收集方案： flume采集文件，转发到kafka，再使用storm写到hdfs。但是实际场景中，我们的数据源不止文件，还有mysql这类db数据。</p>
+<p>众所周知，mysql是可以开启binlog的，也就是说我们对db的每个操作都可以通过binlog解析得到。所以我们实时解析mysql的binlog文件，即可实时获取到db的各个变更事件，就可以实时地将insert的数据，像tail日志文件一样，以规范化的形式发送到我们后端的消息中间件。</p>
+<p>本文不会拘泥于实现细节，只会列举几个注意点，避免后续人采坑。</p>
+<h1 id="注意点"><a href="#注意点" class="headerlink" title="注意点"></a>注意点</h1><p>binlog row模式<br>最需要支持的点：<br>mysql必须支持binlog，且必须是row模式。需要关注几个问题：<br>1.row模式的binlog是远大于其他模式，需要注意磁盘容量<br>2.从其他模式binlog（如mix）改为row模式，需要断开已有mysql的连接，需要dba及相关业务开发评估可行性。<br>3.不需要采集的库表要独立出去，不然大量无关binlog会影响采集器的性能，堵塞通道。（需要推动业务改）<br>4.row模式下日志变多，还有从库解析方式发生变化，可能会造成主从不一致（状态延迟）的情况，需要dba确认</p>
+<h1 id="支持的语句"><a href="#支持的语句" class="headerlink" title="支持的语句"></a>支持的语句</h1><p>不支持DDL，只是inset最好，就类似文件的append。update、delete都会增加后端的处理逻辑。</p>
+<h1 id="事务支持"><a href="#事务支持" class="headerlink" title="事务支持"></a>事务支持</h1><p>本身就是用于大数据处理的，不支持事务</p>
+<h1 id="字段问题"><a href="#字段问题" class="headerlink" title="字段问题"></a>字段问题</h1><p>建议末尾追加字段，只用简易字段（int，string）</p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>binlog方案技术上没什么特别难点，重点还是运营的坑比较多</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://alexguo.net/2018/12/19/大数据采集方案：mysql-binlog-注意点/" data-id="cjti2wkrj002angvws8g4iex5" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/bin-log/">bin_log</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-jvm常见问题知识" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/12/19/jvm常见问题知识/" class="article-date">
+  <time datetime="2018-12-19T07:16:25.000Z" itemprop="datePublished">2018-12-19</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/java/">java</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/12/19/jvm常见问题知识/">jvm常见问题知识</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="1-内存模型以及分区，需要详细到每个区放什么。"><a href="#1-内存模型以及分区，需要详细到每个区放什么。" class="headerlink" title="1. 内存模型以及分区，需要详细到每个区放什么。"></a>1. 内存模型以及分区，需要详细到每个区放什么。</h1><h2 id="栈区："><a href="#栈区：" class="headerlink" title="栈区："></a>栈区：</h2><p>栈分为java虚拟机栈和本地方法栈</p>
+<p>重点是Java虚拟机栈，它是线程私有的，生命周期与线程相同。</p>
+<p>每个方法执行都会创建一个栈帧，用于存放局部变量表，操作栈，动态链接，方法出口等。每个方法从被调用，直到被执行完。对应着一个栈帧在虚拟机中从入栈到出栈的过程。</p>
+<p>通常说的栈就是指局部变量表部分，存放编译期间可知的8种基本数据类型，及对象引用和指令地址。局部变量表是在编译期间完成分配，当进入一个方法时，这个栈中的局部变量分配内存大小是确定的。</p>
+<p>会有两种异常StackOverFlowError和 OutOfMemoneyError。当线程请求栈深度大于虚拟机所允许的深度就会抛出StackOverFlowError错误；虚拟机栈动态扩展，当扩展无法申请到足够的内存空间时候，抛出OutOfMemoneyError。</p>
+<p>本地方法栈为虚拟机使用到本地方法服务（native）</p>
+<h2 id="堆区："><a href="#堆区：" class="headerlink" title="堆区："></a>堆区：</h2><p>堆被所有线程共享区域，在虚拟机启动时创建，唯一目的存放对象实例。</p>
+<p>堆区是gc的主要区域，通常情况下分为两个区块年轻代和年老代。更细一点年轻代又分为Eden区最要放新创建对象，From survivor 和 To survivor 保存gc后幸存下的对象，默认情况下各自占比 8:1:1。</p>
+<p>不过很多文章介绍分为3个区块，把方法区算着为永久代。这大概是基于Hotspot虚拟机划分，然后比如IBM j9就不存在永久代概论。不管怎么分区，都是存放对象实例。</p>
+<p>会有异常OutOfMemoneyError</p>
+<h2 id="方法区："><a href="#方法区：" class="headerlink" title="方法区："></a>方法区：</h2><p>被所有线程共享区域，用于存放已被虚拟机加载的类信息，常量，静态变量等数据。被Java虚拟机描述为堆的一个逻辑部分。习惯是也叫它永久代（permanment generation）</p>
+<p>垃圾回收很少光顾这个区域，不过也是需要回收的，主要针对常量池回收，类型卸载。</p>
+<p>常量池用于存放编译期生成的各种字节码和符号引用，常量池具有一定的动态性，里面可以存放编译期生成的常量；运行期间的常量也可以添加进入常量池中，比如string的intern()方法。</p>
+<h2 id="程序计数器："><a href="#程序计数器：" class="headerlink" title="程序计数器："></a>程序计数器：</h2><p>当前线程所执行的行号指示器。通过改变计数器的值来确定下一条指令，比如循环，分支，跳转，异常处理，线程恢复等都是依赖计数器来完成。</p>
+<p>Java虚拟机多线程是通过线程轮流切换并分配处理器执行时间的方式实现的。为了线程切换能恢复到正确的位置，每条线程都需要一个独立的程序计数器，所以它是线程私有的。</p>
+<p>唯一一块Java虚拟机没有规定任何OutofMemoryError的区块。</p>
+<h1 id="2-堆里面的分区：Eden，survivalfrom-to，老年代，各自的特点。"><a href="#2-堆里面的分区：Eden，survivalfrom-to，老年代，各自的特点。" class="headerlink" title="2. 堆里面的分区：Eden，survivalfrom to，老年代，各自的特点。"></a>2. 堆里面的分区：Eden，survivalfrom to，老年代，各自的特点。</h1><p>1.JVM中堆空间可以分成三个大区，新生代、老年代、永久代。</p>
+<p>2.新生代可以划分为三个区，Eden区，两个幸存区。</p>
+<p>在JVM运行时，可以通过配置以下参数改变整个JVM堆的配置比例</p>
+<p>1.JVM运行时堆的大小<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">-Xms 堆的最小值</span><br><span class="line">-Xmx 堆空间的最大值</span><br></pre></td></tr></table></figure></p>
+<p>2.新生代堆空间大小调整<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">　　-XX:NewSize 新生代的最小值</span><br><span class="line">　　-XX:MaxNewSize 新生代的最大值</span><br><span class="line">　　-XX:NewRatio 设置新生代与老年代在堆空间的大小</span><br><span class="line">　　-XX:SurvivorRatio 新生代中Eden所占区域的大小</span><br></pre></td></tr></table></figure></p>
+<p>3.永久代大小调整<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">　-XX:MaxPermSize</span><br></pre></td></tr></table></figure></p>
+<p>4.其他<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-XX:MaxTenuringThreshold, 设置将新生代对象转到老年代时需要经过多少次垃圾回收，但是仍然没有被回收</span><br></pre></td></tr></table></figure></p>
+<h1 id="复制（Copying）算法"><a href="#复制（Copying）算法" class="headerlink" title="复制（Copying）算法"></a>复制（Copying）算法</h1><p>将内存平均分成A、B两块，算法过程：</p>
+<ol>
+<li>新生对象被分配到A块中未使用的内存当中。当A块的内存用完了， 把A块的存活对象对象复制到B块。</li>
+<li>清理A块所有对象。</li>
+<li>新生对象被分配的B块中未使用的内存当中。当B块的内存用完了， 把B块的存活对象对象复制到A块。</li>
+<li>清理B块所有对象。</li>
+<li>goto 1。</li>
+</ol>
+<p>优点：简单高效。<br>缺点：内存代价高，有效内存为占用内存的一半。</p>
+<h1 id="对复制算法进一步优化：使用Eden-S0-S1三个分区"><a href="#对复制算法进一步优化：使用Eden-S0-S1三个分区" class="headerlink" title="对复制算法进一步优化：使用Eden/S0/S1三个分区"></a>对复制算法进一步优化：使用Eden/S0/S1三个分区</h1><p>平均分成A/B块太浪费内存，采用Eden/S0/S1三个区更合理，空间比例为Eden:S0:S1==8:1:1，有效内存（即可分配新生对象的内存）是总内存的9/10。 </p>
+<p>算法过程：</p>
+<ol>
+<li><p>Eden+S0可分配新生对象；</p>
+</li>
+<li><p>对Eden+S0进行垃圾收集，存活对象复制到S1。清理Eden+S0。一次新生代GC结束。</p>
+</li>
+<li><p>Eden+S1可分配新生对象；</p>
+</li>
+<li><p>对Eden+S1进行垃圾收集，存活对象复制到S0。清理Eden+S1。二次新生代GC结束。</p>
+</li>
+<li><p>goto 1。</p>
+</li>
+</ol>
+<p>默认Eden:S0:S1=8:1:1,因此，新生代中可以使用的内存空间大小占用新生代的9/10,那么有人就会问，为什么不直接分成两个区，一个区占9/10,另一个区占1/10，</p>
+<p>这样做的原因大概有以下几种</p>
+<p>1.S0与S1的区间明显较小，有效新生代空间为Eden+S0/S1，因此有效空间就大，增加了内存使用率</p>
+<p>2.有利于对象代的计算，当一个对象在S0/S1中达到设置的XX:MaxTenuringThreshold值后，会将其分到老年代中，设想一下，如果没有S0/S1,直接分成两个区，该如何计算对象经过了多少次GC还没被释放,你可能会说，在对象里加一个计数器记录经过的GC次数，或者存在一张映射表记录对象和GC次数的关系，是的，可以，但是这样的话，会扫描整个新生代中的对象, 有了S0/S1我们就可以只扫描S0/S1区了~~~</p>
+<h1 id="3-对象创建方法，对象的内存分配，对象的访问定位。"><a href="#3-对象创建方法，对象的内存分配，对象的访问定位。" class="headerlink" title="3. 对象创建方法，对象的内存分配，对象的访问定位。"></a>3. 对象创建方法，对象的内存分配，对象的访问定位。</h1><p>#创建：</p>
+<h2 id="1-类加载检查"><a href="#1-类加载检查" class="headerlink" title="1. 类加载检查"></a>1. 类加载检查</h2><p>JVM遇到一条new指令时，首先检查这个指令的参数是否能在常量池中定位到一个类的符号引用，并且检查这个符号引用代表的类是否已被加载、解析和初始化过。</p>
+<p>如果没有，那必须先执行相应的类的加载过程。 </p>
+<h2 id="2-对象分配内存"><a href="#2-对象分配内存" class="headerlink" title="2. 对象分配内存"></a>2. 对象分配内存</h2><p>对象所需内存的大小在类加载完成后便完全确定（对象内存布局），为对象分配空间的任务等同于把一块确定大小的内存从Java堆中划分出来。</p>
+<p>根据Java堆中是否规整有两种内存的分配方式：（Java堆是否规整由所采用的垃圾收集器是否带有压缩整理功能决定）。 </p>
+<p>指针碰撞(Bump the pointer)</p>
+<p>Java堆中的内存是规整的，所有用过的内存都放在一边，空闲的内存放在另一边，中间放着一个指针作为分界点的指示器，分配内存也就是把指针向空闲空间那边移动一段与内存大小相等的距离。例如：Serial、ParNew等收集器。</p>
+<p>空闲列表(Free List)</p>
+<p>Java堆中的内存不是规整的，已使用的内存和空闲的内存相互交错，就没有办法简单的进行指针碰撞了。虚拟机必须维护一张列表，记录哪些内存块是可用的，在分配的时候从列表中找到一块足够大的空间划分给对象实例，并更新列表上的记录。例如：CMS这种基于Mark-Sweep算法的收集器。</p>
+<h2 id="3-并发处理"><a href="#3-并发处理" class="headerlink" title="3. 并发处理"></a>3. 并发处理</h2><p>对象创建在虚拟机中时非常频繁的行为，即使是仅仅修改一个指针指向的位置，在并发情况下也并不是线程安全的，可能出现正在给对象A分配内存，指针还没来得及修改，对象B又同时使用了原来的指针来分配内存的情况。</p>
+<h4 id="同步"><a href="#同步" class="headerlink" title="同步"></a>同步</h4><p>虚拟机采用CAS配上失败重试的方式保证更新操作的原子性</p>
+<p>本地线程分配缓冲（Thread Local Allocation Buffer, TLAB）</p>
+<p>把内存分配的动作按照线程划分为在不同的空间之中进行，即每个线程在Java堆中预先分配一小块内存（TLAB）。哪个线程要分配内存，就在哪个线程的TLAB上分配。只有TLAB用完并分配新的TLAB时，才需要同步锁定。</p>
+<h2 id="4-内存空间初始化"><a href="#4-内存空间初始化" class="headerlink" title="4. 内存空间初始化"></a>4. 内存空间初始化</h2><p>虚拟机将分配到的内存空间都初始化为零值（不包括对象头）,如果使用了TLAB，这一工作过程也可以提前至TLAB分配时进行。</p>
+<p>内存空间初始化保证了对象的实例字段在Java代码中可以不赋初始值就直接使用，程序能访问到这些字段的数据类型所对应的零值。 </p>
+<p>注意：类的成员变量可以不显示地初始化（Java虚拟机都会先自动给它初始化为默认值）。方法中的局部变量如果只负责接收一个表达式的值，可以不初始化，但是参与运算和直接输出等其它情况的局部变量需要初始化。</p>
+<h2 id="5-对象设置"><a href="#5-对象设置" class="headerlink" title="5. 对象设置"></a>5. 对象设置</h2><p>虚拟机对对象进行必要的设置，例如这个对象是哪个类的实例、如何才能找到类的元数据信息、对象的哈希码、对象的GC分代年龄等信息。这些信息存放在对象的对象头之中。</p>
+<h2 id="6-执行init"><a href="#6-执行init" class="headerlink" title="6. 执行init()"></a>6. 执行init()</h2><p>在上面的工作都完成之后，从虚拟机的角度看，一个新的对象已经产生了。但是从Java程序的角度看，对象的创建才刚刚开始init()方法还没有执行，所有的字段都还是零。</p>
+<p>所以，一般来说（由字节码中是否跟随invokespecial指令所决定），执行new指令之后会接着执行init()方法，把对象按照程序员的意愿进行初始化，这样一个真正可用的对象才算产生出来。</p>
+<h1 id="访问定位：句柄或者直接指针。"><a href="#访问定位：句柄或者直接指针。" class="headerlink" title="访问定位：句柄或者直接指针。"></a>访问定位：句柄或者直接指针。</h1><ol start="4">
+<li>GC的两种判定方法：引用计数与引用链。<br>1.在JDK1.2之前，使用的是引用计数器算法，即当这个类被加载到内存之后，就会产生方法区，堆栈、程序计数</li>
+</ol>
+<p>器等一系列信息，当创建对象的时候，为这个对象在堆栈空间中分配对象，同时会产生一个引用计数器，同时引</p>
+<p>用计数器+1，当有新的引用时，引用计数器继续+1，而当其中一个引用销毁时，引用计数器-1，当引用计数器减</p>
+<p>为0的时候，标志着这个对象已经没有引用了，可以回收了！但是这样会有一个问题：</p>
+<p>当我们的代码出现这样的情况时：</p>
+<p>a)ObjA.obj=ObjB</p>
+<p>b)ObjB.obj=ObjA</p>
+<p>这样的代码会产生如下引用情形objA指向objB，而ObjB又指向objA，这样当其他所有的引用都消失了之后，objA</p>
+<p>和objB还有一个相互的引用，也就是说两个对象的引用计数器各为1，而实际上这两个对象都已经没有额外的引用，已经是垃圾了。</p>
+<p>2.根搜索算法：</p>
+<p>根搜索算法是从离散数学中的图论引入的，程序把所有的引用关系看做一张图，从一个节点GC Root开始，寻找对</p>
+<p>应的引用节点，找到这个节点之后，继续寻找这个节点的引用节点，当所有的引用节点寻找完毕之后，剩余的节</p>
+<p>点则被认为是没有被饮用到的节点，即无用的节点。</p>
+<p>目前Java中可作为GC Root的对象有：</p>
+<p>1.虚拟机栈中引用的对象（本地变量表）</p>
+<p>2.方法区中静态属性引用的对象</p>
+<p>3.方法区中常量引用的对象</p>
+<p>4.本地方法栈中引用的对象(Native对象)。</p>
+<p>java中存在的四种引用<br>（1）强引用：</p>
+<p>只要引用存在，垃圾回收器永远不会回收。</p>
+<p>（2）软引用</p>
+<p>非必须引用，内存溢出之前进行回收，可以通过以下代码实现</p>
+<p>Object obj=new Object();</p>
+<p>SoftReference<object> sf=newSoftRerence<object>(obj);</object></object></p>
+<p>obj=null;</p>
+<p>sf.get();//有时会返回null</p>
+<p>这时候sf是对obj的一个软引用，通过sf.get()方法可以取到这个对象，当然这个对象被标记为需要回收的对象时，</p>
+<p>则返回null；</p>
+<p>软引用主要用于用户实现类似缓存的功能，在内存不足的情况下直接通过软引用取值，无需从繁忙的真实来源查</p>
+<p>询数据，提升速度；当内存不足时，自动删除这部分缓存数据，从真实的来源查询这些数据。</p>
+<p>（3）弱引用</p>
+<p>第二次垃圾回收时回收，可以通过如下代码实现</p>
+<p>Object obj=new Object();</p>
+<p>WeakReference<object> wf=newWeakReference<object>(obj);</object></object></p>
+<p>obj=null;</p>
+<p>wf.get();//有时会返回null</p>
+<p>wf.isEnQueued();//返回是否被垃圾回收器标记为即将回收的垃圾</p>
+<p>弱引用是在第二次垃圾回收时回收，短时间内通过弱引用取对应的数据，可以取到，当执行过第二次垃圾回收时，</p>
+<p>将返回null。弱引用主要用于监控对象是否已经被标记为即将回收的垃圾，可以通过弱引用的isEnQueues方法</p>
+<p>返回对象是否被垃圾回收器标记。</p>
+<p>（4）虚引用</p>
+<p>垃圾回收时回收，无法通过引用取到对象值，可以通过如下代码实现</p>
+<p>Object obj=new Object();</p>
+<p>PhantomReference<object> pf=newPhantomReference<object>(obj);</object></object></p>
+<p>obj=null;</p>
+<p>pf.get();//永远是返回null</p>
+<p>pf.isEnQueued();//返回从内从中已经删除。</p>
+<p>虚引用是每次垃圾回收的时候都会被回收，通过虚引用的get方法永远获取到的数据为null。</p>
+<h1 id="5-GC的三种收集方法：标记清除、标记整理、复制算法的原理与特点，分别用在什么地方，如果让你优化收集方法，有什么思路？"><a href="#5-GC的三种收集方法：标记清除、标记整理、复制算法的原理与特点，分别用在什么地方，如果让你优化收集方法，有什么思路？" class="headerlink" title="5. GC的三种收集方法：标记清除、标记整理、复制算法的原理与特点，分别用在什么地方，如果让你优化收集方法，有什么思路？"></a>5. GC的三种收集方法：标记清除、标记整理、复制算法的原理与特点，分别用在什么地方，如果让你优化收集方法，有什么思路？</h1><p>垃圾回收算法</p>
+<p>标记-清除算法（Mark-Sweep）</p>
+<p>从根节点开始标记所有可达对象，其余没有标记的即为垃圾对象，执行清除。但回收后的空间是不连续的。</p>
+<p>标记-清除算法采用从根集合进行扫描，对存活的对象标记，标记完毕后，在扫描整个空间中未被标记的对象，进</p>
+<p>行回收。</p>
+<p>标记-清除算法不需要进行对象的移动，并且仅对不存活的对象进行处理，在存活对象比较多的情况下极为高效，</p>
+<p>但由于标记-清除算法直接回收不存活的对象，因此会造成内存碎片。</p>
+<p>复制算法</p>
+<p>复制算法采用从根集合扫描，并将存活对象复制到一块新的，没有使用过的空间中，这种算法当控件存活的对象</p>
+<p>比较少时，极为高效，但是带来的成本是需要一块内存交换空间进行对象的移动。也就是s0，s1等空间。</p>
+<p>标记-整理法</p>
+<p>标记-整理算法采用标记-清除算法一样的方式进行对象的标记，但在清除时，在回收不存活的对象占用的空间后，</p>
+<p>会将所有的存活对象网左端空闲空间移动，并更新相应的指针。标记-整理算法是在标记-清除算法的基础上，</p>
+<p>又进行了对象的移动，因此成本更高，但是却解决了内存碎片的问题。</p>
+<h1 id="6-GC收集器有哪些？CMS收集器与G1收集器的特点。"><a href="#6-GC收集器有哪些？CMS收集器与G1收集器的特点。" class="headerlink" title="6. GC收集器有哪些？CMS收集器与G1收集器的特点。"></a>6. GC收集器有哪些？CMS收集器与G1收集器的特点。</h1><p>串行垃圾回收器（Serial Garbage Collector）</p>
+<p>并行垃圾回收器（Parallel Garbage Collector）</p>
+<p>并发标记扫描垃圾回收器（CMS Garbage Collector）</p>
+<p>G1垃圾回收器（G1 GarbageCollector）</p>
+<p>并发标记垃圾回收使用多线程扫描堆内存，标记需要清理的实例并且清理被标记过的实例。并发标记垃圾回收器只会在下面两种情况持有应用程序所有线程。</p>
+<p>当标记的引用对象在tenured区域；</p>
+<p>在进行垃圾回收的时候，堆内存的数据被并发的改变。</p>
+<p>相比并行垃圾回收器，并发标记扫描垃圾回收器使用更多的CPU来确保程序的吞吐量。如果我们可以为了更好的程序性能分配更多的CPU，那么并发标记上扫描垃圾回收器是更好的选择相比并发垃圾回收器。</p>
+<p>通过JVM参数 XX:+USeParNewGC 打开并发标记扫描垃圾回收器。</p>
+<p>G1垃圾回收器适用于堆内存很大的情况，他将堆内存分割成不同的区域，并且并发的对其进行垃圾回收。G1也可以在回收内存之后对剩余的堆内存空间进行压缩。并发扫描标记垃圾回收器在STW情况下压缩内存。G1垃圾回收会优先选择第一块垃圾最多的区域</p>
+<p>通过JVM参数–XX:+UseG1GC 使用G1垃圾回收器</p>
+<h1 id="7-Minor-GC与Full-GC分别在什么时候发生？"><a href="#7-Minor-GC与Full-GC分别在什么时候发生？" class="headerlink" title="7. Minor GC与Full GC分别在什么时候发生？"></a>7. Minor GC与Full GC分别在什么时候发生？</h1><p>从年轻代空间（包括 Eden 和 Survivor 区域）回收内存被称为 Minor GC。</p>
+<p>这一定义既清晰又易于理解。但是，当发生Minor GC事件的时候，有一些有趣的地方需要注意到：</p>
+<p>当 JVM 无法为一个新的对象分配空间时会触发 Minor GC，比如当 Eden 区满了。所以分配率越高，越频繁执行 Minor GC。</p>
+<p>内存池被填满的时候，其中的内容全部会被复制，指针会从0开始跟踪空闲内存。Eden 和 Survivor 区进行了标记和复制操作，取代了经典的标记、扫描、压缩、清理操作。所以 Eden 和 Survivor 区不存在内存碎片。写指针总是停留在所使用内存池的顶部。</p>
+<p>执行 Minor GC 操作时，不会影响到永久代。从永久代到年轻代的引用被当成 GC roots，从年轻代到永久代的引用在标记阶段被直接忽略掉。</p>
+<p>质疑常规的认知，所有的 Minor GC 都会触发“全世界的暂停（stop-the-world）”，停止应用程序的线程。对于大部分应用程序，停顿导致的延迟都是可以忽略不计的。</p>
+<p>其中的真相就是，大部分 Eden 区中的对象都能被认为是垃圾，永远也不会被复制到 Survivor 区或者老年代空间。</p>
+<p>如果正好相反，Eden 区大部分新生对象不符合 GC 条件，Minor GC 执行时暂停的时间将会长很多。</p>
+<p>所以 Minor GC 的情况就相当清楚了——每次 Minor GC 会清理年轻代的内存。</p>
+<p>大家应该注意到，目前，这些术语无论是在 JVM 规范还是在垃圾收集研究论文中都没有正式的定义。但是我们一看就知道这些在我们已经知道的基础之上做出的定义是正确的，</p>
+<p>Minor GC 清理年轻带内存应该被设计得简单：</p>
+<p>Major GC 是清理永久代。</p>
+<p>Full GC 是清理整个堆空间—包括年轻代和永久代。</p>
+<p>很不幸，实际上它还有点复杂且令人困惑。首先，许多 Major GC 是由 Minor GC 触发的，所以很多情况下将这两种 GC 分离是不太可能的。另一方面，许多现代垃圾收集机制会清理部分永久代空间，所以使用“cleaning”一词只是部分正确。</p>
+<p>这使得我们不用去关心到底是叫 Major GC 还是 Full GC，大家应该关注当前的 GC 是否停止了所有应用程序的线程，还是能够并发的处理而不用停掉应用程序的线程。</p>
+<h1 id="8-几种常用的内存调试工具：jmap、jstack、jconsole。"><a href="#8-几种常用的内存调试工具：jmap、jstack、jconsole。" class="headerlink" title="8. 几种常用的内存调试工具：jmap、jstack、jconsole。"></a>8. 几种常用的内存调试工具：jmap、jstack、jconsole。</h1><p>#9. 类加载的五个过程：加载、验证、准备、解析、初始化。<br>加载：</p>
+<pre><code>在加载阶段，虚拟机主要完成三件事：
+</code></pre><p>1.通过一个类的全限定名来获取定义此类的二进制字节流。</p>
+<p>2.将这个字节流所代表的静态存储结构转化为方法区域的运行时数据结构。</p>
+<p>3.在Java堆中生成一个代表这个类的java.lang.Class对象，作为方法区域数据的访问入口。</p>
+<p>验证：</p>
+<pre><code>验证阶段作用是保证Class文件的字节流包含的信息符合JVM规范，不会给JVM造成危害。如果验证失败，就会抛出一个java.lang.VerifyError异常或其子类异常。验证过程分为四个阶段：
+</code></pre><p>1.文件格式验证：验证字节流文件是否符合Class文件格式的规范，并且能被当前虚拟机正确的处理。</p>
+<p>2.元数据验证：是对字节码描述的信息进行语义分析，以保证其描述的信息符合Java语言的规范。</p>
+<p>3.字节码验证：主要是进行数据流和控制流的分析，保证被校验类的方法在运行时不会危害虚拟机。</p>
+<p>4.符号引用验证：符号引用验证发生在虚拟机将符号引用转化为直接引用的时候，这个转化动作将在解析阶段中发生。</p>
+<p>准备：</p>
+<pre><code>准备阶段为变量分配内存并设置类变量的初始化。在这个阶段分配的仅为类的变量（static修饰的变量），而不包括类的实例变量。对已非final的变量，JVM会将其设置成“零值”，而不是其赋值语句的值：
+</code></pre><p>pirvate static int size = 12;</p>
+<pre><code>那么在这个阶段，size的值为0，而不是12。 final修饰的类变量将会赋值成真实的值。
+</code></pre><p>解析：</p>
+<pre><code>解析过程是将常量池内的符号引用替换成直接引用。主要包括四种类型引用的解析。类或接口的解析、字段解析、方法解析、接口方法解析。
+</code></pre><p>初始化：</p>
+<pre><code>在准备阶段，类变量已经经过一次初始化了，在这个阶段，则是根据程序员通过程序制定的计划去初始化类的变量和其他资源。这些资源有static{}块，构造函数，父类的初始化等。
+
+至于使用和卸载阶段阶段，这里不再过多说明，使用过程就是根据程序定义的行为执行，卸载由GC完成。
+</code></pre><h1 id="10-双亲委派模型：Bootstrap-ClassLoader、ExtensionClassLoader、ApplicationClassLoader。"><a href="#10-双亲委派模型：Bootstrap-ClassLoader、ExtensionClassLoader、ApplicationClassLoader。" class="headerlink" title="10. 双亲委派模型：Bootstrap ClassLoader、ExtensionClassLoader、ApplicationClassLoader。"></a>10. 双亲委派模型：Bootstrap ClassLoader、ExtensionClassLoader、ApplicationClassLoader。</h1><p>类加载器按照层次，从顶层到底层，分为以下三种：</p>
+<p> （1）启动类加载器（BootstrapClassLoader）</p>
+<p>  这个类加载器负责将存放在JAVA_HOME/lib下的，或者被-Xbootclasspath参数所指定的路径中的，并且是虚拟机识别的类库加载到虚拟机内存中。启动类加载器无法被Java程序直接引用。</p>
+<p> （2）扩展类加载器（ExtensionClassLoader）</p>
+<p>  这个加载器负责加载JAVA_HOME/lib/ext目录中的，或者被java.ext.dirs系统变量所指定的路径中的所有类库，开发者可以直接使用扩展类加载器</p>
+<p> （3）应用程序类加载器（ApplicationClassLoader）</p>
+<p>  这个加载器是ClassLoader中getSystemClassLoader()方法的返回值，所以一般也称它为系统类加载器。它负责加载用户类路径（Classpath）上所指定的类库，可直接使用这个加载器，如果应用程序没有自定义自己的类加载器，一般情况下这个就是程序中默认的类加载</p>
+<p> 类加载的双亲委派模型<br>  双亲委派模型要求除了顶层的启动类加载器外，其他的类加载器都应当有自己的父类加载器。这里类加载器之间的父子关系一般不会以继承关系来实现，而是都使用组合关系来复用父加载器的代码</p>
+<p>  工作过程：</p>
+<p>如果一个类加载器收到了类加载的请求，它首先不会自己去尝试加载这个类，而是把这个请求委派给父类加载器去完成，每一个层次的类加载器都是如此，因此所有的加载请求最终都应该传递到顶层的启动类加载器中，</p>
+<p>只有当父类加载器反馈自己无法完成这个请求（它的搜索范围中没有找到所需的类）时，子加载器才会尝试自己去加载。</p>
+<p>好处：</p>
+<p>Java类随着它的类加载器一起具备了一种带有优先级的层次关系。例如类Object，它放在rt.jar中，无论哪一个类加载器要加载这个类，最终都是委派给启动类加载器进行加载，因此Object类在程序的各种类加载器环境中都是同一个类。</p>
+<p>判断两个类是否相同是通过classloader.class这种方式进行的，所以哪怕是同一个class文件如果被两个classloader加载，那么他们也是不同的类。</p>
+<p> 实现自己的加载器<br>  只需要继承ClassLoader，并覆盖findClass方法。</p>
+<p>  在调用loadClass方法时，会先根据委派模型在父加载器中加载，如果加载失败，则会调用自己的findClass方法来完成加载。</p>
+<h1 id="11-分派：静态分派与动态分派。"><a href="#11-分派：静态分派与动态分派。" class="headerlink" title="11. 分派：静态分派与动态分派。"></a>11. 分派：静态分派与动态分派。</h1><p>静态分派</p>
+<p>所有依赖静态类型来定位方法执行版本的分派动作称为静态分派，其典型应用是方法重载（根据参数的静态类型来定位目标方法）。</p>
+<p>静态分派发生在编译阶段，因此确定静态分派的动作实际上不是由虚拟机执行的。</p>
+<p>动态分派</p>
+<p>在运行期根据实际类型确定方法执行版本。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://alexguo.net/2018/12/19/jvm常见问题知识/" data-id="cjti2wksl004angvwpzlfvayu" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/jvm/">jvm</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-JVM性能调优监控工具jps、jstack、jmap、jhat、jstat、hprof使用详解" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/12/19/JVM性能调优监控工具jps、jstack、jmap、jhat、jstat、hprof使用详解/" class="article-date">
+  <time datetime="2018-12-19T07:11:45.000Z" itemprop="datePublished">2018-12-19</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/java/">java</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/12/19/JVM性能调优监控工具jps、jstack、jmap、jhat、jstat、hprof使用详解/">JVM性能调优监控工具jps、jstack、jmap、jhat、jstat、hprof使用详解</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://alexguo.net/2018/12/19/JVM性能调优监控工具jps、jstack、jmap、jhat、jstat、hprof使用详解/" data-id="cjti2wkqa0004ngvwc9jq8eb1" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/jvm/">jvm</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-MySQL二进制日志（binary-log）总结" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/12/18/MySQL二进制日志（binary-log）总结/" class="article-date">
+  <time datetime="2018-12-18T08:59:13.000Z" itemprop="datePublished">2018-12-18</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/12/18/MySQL二进制日志（binary-log）总结/">MySQL二进制日志（binary log）总结</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>默认的innodb引擎，开启了二进制日志，<br>对于事务性的操作，是要事物完成的时候写入二进制日志，事物提交之前，执行的写入性操作会被缓存起来，直到整个事物完成，mysqld进程会将整个事物写入二进制日志。<br>当事物开始的时候，会按照binlog_cache_size系统变量指定的值分配内容空间，如果指定的binlog_cache_size缓存空间不够，执行的事务性操作回滚并提示失败。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show variables like &apos;%binlog%&apos;;</span><br><span class="line">+--------------------------------------------+----------------------+</span><br><span class="line">| Variable_name                              | Value                |</span><br><span class="line">+--------------------------------------------+----------------------+</span><br><span class="line">| binlog_cache_size                          | 32768                |</span><br><span class="line">| binlog_checksum                            | CRC32                |</span><br><span class="line">| binlog_direct_non_transactional_updates    | OFF                  |</span><br><span class="line">| binlog_error_action                        | ABORT_SERVER         |</span><br><span class="line">| binlog_format                              | ROW                  |</span><br><span class="line">| binlog_group_commit_sync_delay             | 0                    |</span><br><span class="line">| binlog_group_commit_sync_no_delay_count    | 0                    |</span><br><span class="line">| binlog_gtid_simple_recovery                | ON                   |</span><br><span class="line">| binlog_max_flush_queue_time                | 0                    |</span><br><span class="line">| binlog_order_commits                       | ON                   |</span><br><span class="line">| binlog_row_image                           | FULL                 |</span><br><span class="line">| binlog_rows_query_log_events               | OFF                  |</span><br><span class="line">| binlog_stmt_cache_size                     | 32768                |</span><br><span class="line">| binlog_transaction_dependency_history_size | 25000                |</span><br><span class="line">| binlog_transaction_dependency_tracking     | COMMIT_ORDER         |</span><br><span class="line">| innodb_api_enable_binlog                   | OFF                  |</span><br><span class="line">| innodb_locks_unsafe_for_binlog             | OFF                  |</span><br><span class="line">| log_statements_unsafe_for_binlog           | ON                   |</span><br><span class="line">| max_binlog_cache_size                      | 18446744073709547520 |</span><br><span class="line">| max_binlog_size                            | 1073741824           |</span><br><span class="line">| max_binlog_stmt_cache_size                 | 18446744073709547520 |</span><br><span class="line">| sync_binlog                                | 1                    |</span><br><span class="line">+--------------------------------------------+----------------------+</span><br><span class="line">22 rows in set (0.46 sec)</span><br><span class="line"></span><br><span class="line">mysql&gt;</span><br></pre></td></tr></table></figure>
+<h1 id="什么是二进制日志？"><a href="#什么是二进制日志？" class="headerlink" title="什么是二进制日志？"></a>什么是二进制日志？</h1><p>　　用来记录操作MySQL数据库中的写入性操作（增删改，但不包括查询），相当于sqlserver中的完整恢复模式下的事务日志文件。</p>
+<h1 id="二进制日志的作用？"><a href="#二进制日志的作用？" class="headerlink" title="二进制日志的作用？"></a>二进制日志的作用？</h1><p>　　1，用于复制，配置了主从复制的时候，主服务器会将其产生的二进制日志发送到slave端，slave端会利用这个二进制日志的信息在本地重做，实现主从同步<br>　　2，用户恢复，MySQL可以在全备和差异备份的基础上，利用二进制日志进行基于时间点或者事物Id的恢复操作。原理雷同于主从复制的日志重做。</p>
+<h1 id="二进制日志（binary-log）的相关参数信息"><a href="#二进制日志（binary-log）的相关参数信息" class="headerlink" title="二进制日志（binary log）的相关参数信息"></a>二进制日志（binary log）的相关参数信息</h1><p>1，开启二进制日志<br>开启二进制日志，需要指定一个log-bin参数的路径，比如：log_bin=/var/lib/mysql/mysql-bin<br>　开始二进制日志之后会自动生成一个管理二进制日志的log_bin_index文件。log_bin选项也显示为on，也即开启了二进制日志。</p>
+<h2 id="在my-inf主配置文件中直接添加三行"><a href="#在my-inf主配置文件中直接添加三行" class="headerlink" title="在my.inf主配置文件中直接添加三行"></a>在my.inf主配置文件中直接添加三行</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">log_bin=ON</span><br><span class="line">log_bin_basename=/var/lib/mysql/mysql-bin</span><br><span class="line">log_bin_index=/var/lib/mysql/mysql-bin.index</span><br></pre></td></tr></table></figure>
+<p>三个参数来指定，<br>第一个参数是打开binlog日志<br>第二个参数是binlog日志的基本文件名，后面会追加标识来表示每一个文件<br>第三个参数指定的是binlog文件的索引文件，这个文件管理了所有的binlog文件的目录</p>
+<p>当然也有一种简单的配置，一个参数就可以搞定<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">log-bin=/var/lib/mysql/mysql-bin</span><br></pre></td></tr></table></figure></p>
+<p>这一个参数的作用和上面三个的作用是相同的，mysql会根据这个配置自动设置log_bin为on状态，自动设置log_bin_index文件为你指定的文件名后跟.index</p>
+<p>这些配置完毕之后对于5.7以下版本应该是可以了，但是我们这个时候用的如果是5.7及以上版本的话，重启mysql服务会报错。这个时候我们必须还要指定一个参数<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">server-id=123454</span><br></pre></td></tr></table></figure></p>
+<p>随机指定一个不能和其他集群中机器重名的字符串，如果只有一台机器，那就可以随便指定了</p>
+<p>有了上述的配置之后，我们就可以重新启动我们的mysql了<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">service mysqld restart</span><br></pre></td></tr></table></figure></p>
+<p>启动成功之后，我们可以登陆查看我们的配置是否起作用<br>show variables like ‘%log_bin%’</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://alexguo.net/2018/12/18/MySQL二进制日志（binary-log）总结/" data-id="cjti2wkqb0005ngvw4awz46hk" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mysql/">mysql</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-大数据日志分析系统-python脚本利用es聚合计算" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/12/18/大数据日志分析系统-python脚本利用es聚合计算/" class="article-date">
+  <time datetime="2018-12-18T07:50:15.000Z" itemprop="datePublished">2018-12-18</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/12/18/大数据日志分析系统-python脚本利用es聚合计算/">大数据日志分析系统-python脚本利用es聚合计算</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>之所以不进行es聚合实时查询一个是查询数量过大，另一方面是实时查询要保存大量的原始日志，现在只有5台es data节点，不能承受这么大的原始日志量。原始日志保留一定的天数要进行删除。</p>
+<pre><code>当然也有的数据只是查询几天内的数据就直接用es的自身聚合能力了
+</code></pre><p>#python部分脚本示例：</p>
+<pre><code>
+def main_statistic(domain,userId):
+
+    body = {
+
+        &quot;query&quot;: {
+
+            &quot;bool&quot;: {
+
+                &quot;must&quot;: [
+
+                    {
+
+                        &quot;term&quot;: {
+
+                            &quot;uriHost.raw&quot;: domain
+
+                        }
+
+                    }
+
+                ]
+
+            }
+
+        },
+
+        &quot;size&quot;: 0,
+
+        &quot;aggs&quot;: {
+
+            &quot;fileCount&quot;: {
+
+                &quot;terms&quot;: {
+
+                    &quot;field&quot;: &quot;mime.raw&quot;
+
+                },
+
+                &quot;aggs&quot;: {
+
+                    &quot;totalFileSize&quot;: {
+
+                        &quot;sum&quot;: {
+
+                            &quot;field&quot;: &quot;repsize&quot;
+
+                        }
+
+                    }
+
+                }
+
+            }
+
+        }
+
+    }
+
+
+
+    result = in_es.search(index=common_index.logstash_index,doc_type=&quot;fc_access&quot;,body=body)
+
+
+
+    name = result[&quot;aggregations&quot;][&quot;fileCount&quot;]
+
+    buckets = name[&quot;buckets&quot;]
+
+    for name_item in buckets:
+
+        name_key = name_item[&quot;key&quot;]
+
+        doc_count = name_item[&quot;doc_count&quot;]
+
+        totalFileSize = name_item[&quot;totalFileSize&quot;][&quot;value&quot;]
+
+
+
+        if doc_count &gt; 0:
+
+            browser_count_item = {
+
+                &quot;_index&quot;: common_index.spark_portal_index,
+
+                &quot;_type&quot;: &quot;logstashIndexDF_filetype_totalsize&quot;,
+
+                &quot;_source&quot;: {
+
+                    &quot;@timestamp&quot;: common_index.timestamp_attr,
+
+                    &quot;add_time&quot;: common_index.add_time_attr,
+
+                    &quot;uriHost&quot;: domain,
+
+                    &quot;userId&quot;: userId,
+
+                    &quot;mime&quot;: name_key,
+
+                    &quot;fileCount&quot;: doc_count,
+
+                    &quot;totalFileSize&quot;: totalFileSize
+
+                }
+
+            }
+
+            print browser_count_item
+
+            out_count_arr.append(browser_count_item)
+
+
+
+            # 这是按照用户分类进行数据填充的
+
+            browser_count_item_use = {
+
+                &quot;_index&quot;: common_index.spark_portal_index,
+
+                &quot;_type&quot;: &quot;logstashIndexDF_filetype_totalsize_sum&quot;,
+
+                &quot;_source&quot;: {
+
+                    &quot;@timestamp&quot;: common_index.timestamp_attr,
+
+                    &quot;add_time&quot;: common_index.add_time_attr,
+
+                    &quot;userId&quot;: userId,
+
+                    &quot;mime&quot;: name_key,
+
+                    &quot;fileCountSum&quot;: doc_count,
+
+                    &quot;totalFileSizeSum&quot;: totalFileSize
+
+                }
+
+            }
+
+            print browser_count_item_use
+
+            out_count_arr.append(browser_count_item_use)
+
+
+
+
+
+
+
+def cacl_main(common_index_obj,domain_users):
+
+    global common_index
+
+    common_index = common_index_obj
+
+
+
+    global out_count_arr
+
+    out_count_arr = []
+
+
+
+    for domain_user_item in domain_users:
+
+        domain = domain_user_item[&quot;key&quot;]
+
+        userId = domain_user_item[&quot;user_id&quot;]
+
+        main_statistic(domain=domain, userId=userId)
+
+
+
+        if len(out_count_arr) &gt; 300:
+
+            helpers.bulk(out_es, out_count_arr)
+
+            out_count_arr = []
+
+</code></pre>
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://alexguo.net/2018/12/18/大数据日志分析系统-python脚本利用es聚合计算/" data-id="cjti2wkrd001yngvw2ubkkb2j" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-大数据日志分析系统-hdfs日志存储" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/12/18/大数据日志分析系统-hdfs日志存储/" class="article-date">
+  <time datetime="2018-12-18T07:43:53.000Z" itemprop="datePublished">2018-12-18</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/大数据/">大数据</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/12/18/大数据日志分析系统-hdfs日志存储/">大数据日志分析系统-hdfs日志存储</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="hdfs简介："><a href="#hdfs简介：" class="headerlink" title="hdfs简介："></a>hdfs简介：</h1><p>Hadoop分布式文件系统(HDFS)被设计成适合运行在通用硬件(commodity hardware)上的分布式文件系统。</p>
+<h1 id="项目需求："><a href="#项目需求：" class="headerlink" title="项目需求："></a>项目需求：</h1><p>使用hdfs存储客户需要的指定域名时间打包日志 以及原始日志存储进行离线计算</p>
+<h1 id="遇到的问题："><a href="#遇到的问题：" class="headerlink" title="遇到的问题："></a>遇到的问题：</h1><p>在这一步遇到的一个重要的问题：</p>
+<p>问题：从kafka中日志直接按域名时间分类存入hdfs时速度不够,主要时数据量太大，当数据量减少到1/10的时候满足要求。</p>
+<h1 id="试过："><a href="#试过：" class="headerlink" title="试过："></a>试过：</h1><ul>
+<li><p>spark：从kafka取出数据日志解析存入hdfs</p>
+</li>
+<li><p>logstash: 从kfaka中取出数据，然后自定义conf配置文件，按域名按小时直接存入hdfs</p>
+</li>
+<li><p>flume： flume自定义filter插件（java写的），将原始日志按照时间域名分类存入hdfs</p>
+</li>
+</ul>
+<p>发现这些东西都是存入hdfs速度不够，当然同时也看hdfs日志，hdfs本来就是适合大文件存储，同时每条日志存储有自己的路径有namenode datanode，现在这样一条日志或者百千条日志就进行一次日志存储的效率明显很低。</p>
+<h1 id="进行速度测试："><a href="#进行速度测试：" class="headerlink" title="进行速度测试："></a>进行速度测试：</h1><ul>
+<li><p>spark - kafka -logstash:从spark从kafka中取出原始日志然后将结果写入kafka的另一个topic这样的速度是OK的， 然后尝试结果数据再次通过logstash从kafka取出写入hdfs速度是跟不上的。</p>
+</li>
+<li><p>flume： 直接从kafka中取出然后按域名时间分类，写入本地或者直接屏幕上打印速度都是可以的。</p>
+</li>
+</ul>
+<h1 id="最后的解决是："><a href="#最后的解决是：" class="headerlink" title="最后的解决是："></a>最后的解决是：</h1><p>flume自定义fliter插件（java），outPutSink插件（java），写入本地（这样已经测试速度是OK的，时间域名分割存储还未OK），本地形成大文件后写入hdfs（这里可以直接通过hdfs的api实现，linux定时脚本调用即可）</p>
+<h1 id="当然也可以直接用hbase进行原始日志的存储"><a href="#当然也可以直接用hbase进行原始日志的存储" class="headerlink" title="当然也可以直接用hbase进行原始日志的存储"></a>当然也可以直接用hbase进行原始日志的存储</h1><p>git地址示例：</p>
+<p><a href="https://github.com/penghaoyou5/Flume-plug-in-log" target="_blank" rel="noopener">https://github.com/penghaoyou5/Flume-plug-in-log</a></p>
+<p>直接上配置：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">ubuntu@sp26:~/apps/hadoop-2.6.4/etc/hadoop$ cat core-site.xml</span><br><span class="line">&lt;configuration&gt;</span><br><span class="line">&lt;property&gt;</span><br><span class="line">&lt;name&gt;fs.defaultFS&lt;/name&gt;</span><br><span class="line">&lt;value&gt;hdfs://sp26:9000&lt;/value&gt;</span><br><span class="line">&lt;/property&gt;</span><br><span class="line"></span><br><span class="line">&lt;property&gt;</span><br><span class="line">&lt;name&gt;hadoop.tmp.dir&lt;/name&gt;</span><br><span class="line">&lt;value&gt;/home/ubuntu/hdpdata&lt;/value&gt;</span><br><span class="line">&lt;/property&gt;</span><br><span class="line">&lt;/configuration&gt;</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ubuntu@sp26:~/apps/hadoop-2.6.4/etc/hadoop$ cat hadoop-env.sh</span><br><span class="line">export JAVA_HOME=/home/ubuntu/apps/jdk1.7.0_45</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">ubuntu@sp26:~/apps/hadoop-2.6.4/etc/hadoop$ cat hdfs-site.xml</span><br><span class="line">&lt;configuration&gt;</span><br><span class="line">&lt;property&gt;</span><br><span class="line">&lt;name&gt;dfs.namenode.name.dir&lt;/name&gt;</span><br><span class="line">&lt;value&gt;/mnt/data2/wlkhadname,/mnt/data3/wlkhadname,/mnt/data4/wlkhadname,/mnt/data5/wlkhadname,/mnt/data6/wlkhadname,/mnt/data7/wlkhadname,/mnt/data8/wlkhadname,/mnt/data9/wlkhadname,/mnt/data10/wlkhadname&lt;/value&gt;</span><br><span class="line">&lt;/property&gt;</span><br><span class="line">&lt;property&gt;</span><br><span class="line">&lt;name&gt;dfs.datanode.data.dir&lt;/name&gt;</span><br><span class="line">&lt;value&gt;/mnt/data2/wlkhaddata,/mnt/data3/wlkhaddata,/mnt/data4/wlkhaddata,/mnt/data5/wlkhaddata,/mnt/data6/wlkhaddata,/mnt/data7/wlkhaddata,/mnt/data8/wlkhaddata,/mnt/data9/wlkhaddata,/mnt/data10/wlkhaddata&lt;/value&gt;</span><br><span class="line">&lt;/property&gt;</span><br><span class="line">&lt;property&gt;</span><br><span class="line">&lt;name&gt;dfs.replication&lt;/name&gt;</span><br><span class="line">&lt;value&gt;2&lt;/value&gt;</span><br><span class="line">&lt;/property&gt;</span><br><span class="line">&lt;property&gt;</span><br><span class="line">&lt;name&gt;dfs.secondary.http.address&lt;/name&gt;</span><br><span class="line">&lt;value&gt;sp26:50090&lt;/value&gt;</span><br><span class="line">&lt;/property&gt;</span><br><span class="line">&lt;property&gt;</span><br><span class="line">        &lt;name&gt;dfs.datanode.max.xcievers&lt;/name&gt;</span><br><span class="line">        &lt;value&gt;8192&lt;/value&gt;</span><br><span class="line">&lt;/property&gt;</span><br><span class="line">&lt;/configuration&gt;</span><br></pre></td></tr></table></figure>
+<p><code>ubuntu@sp26:~/apps/hadoop-2.6.4/etc/hadoop$ cat slaves 
+sp27
+sp28
+sp29
+sp30</code>　</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://alexguo.net/2018/12/18/大数据日志分析系统-hdfs日志存储/" data-id="cjti2wkr8001nngvwr2zn3yz2" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hdfs/">hdfs</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-大数据日志分析系统-spark进行日志计算" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/12/18/大数据日志分析系统-spark进行日志计算/" class="article-date">
+  <time datetime="2018-12-18T07:39:49.000Z" itemprop="datePublished">2018-12-18</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/大数据/">大数据</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/12/18/大数据日志分析系统-spark进行日志计算/">大数据日志分析系统-spark进行日志计算</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>#spark简介：<br>Apache Spark 是专为大规模数据处理而设计的快速通用的计算引擎。</p>
+<p>#需要满足的项目需求：<br>用spark进行实时统计，从kafka中获取数据，流式计算每分钟一次将计算结果存入es，供客户进行查询。</p>
+<p>#这里不用直接存入es的方式进行聚合或者存入es之后再进行计算的原因：</p>
+<ul>
+<li><p>1.直接存入es进行聚合的话es中会随着时间的推移保存大量的原始日志，es存入数据量太大的数据会产生性能问题,而且大量用户同时查询也会产生聚合过多的性能问题。</p>
+</li>
+<li><p>2.先将原始日志存入es，计算结果数据后再次删除原始日志   会产生问题： </p>
+<ul>
+<li><p>1）虽然现有数据量es能够满足要求，但是当数据量再次大增时会产生kafka堆积 - es速度跟不上，而spark的处理速度可以跟得上  </p>
+</li>
+<li><p>2）实时性在逻辑上和技术上得不到很好的保证。例如每次计算当前时间前5分钟的日志（线上python脚本运行时计算当前时间前1小时日志），一旦数据量过大产生kafka堆积，日志不能实时收集到es就会产生计算数据少的问题。</p>
+</li>
+</ul>
+</li>
+</ul>
+<p>#做的过程中遇到的问题：<br>遇到过内存问题，算是由于缓存处理不当引起的 后来改用了LruCache      现象是不断的进行消费没有产生kafka堆积，但是没有结果数据，运行正常</p>
+<p>#spark配置：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">ubuntu@sp26:~/apps/spark-1.6.1-bin-hadoop2.6/conf$ cat spark-env.sh | grep -v &apos;#&apos;</span><br><span class="line">export JAVA_HOME=/home/ubuntu/apps/jdk1.8.0_144</span><br><span class="line"></span><br><span class="line">export SPARK_MASTER_IP=sp26</span><br><span class="line"></span><br><span class="line">export SPARK_MASTER_PORT=7077</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">ubuntu@sp26:~/apps/spark-1.6.1-bin-hadoop2.6/conf$ cat slaves</span><br><span class="line"></span><br><span class="line">sp27</span><br><span class="line"></span><br><span class="line">sp28</span><br><span class="line"></span><br><span class="line">sp29</span><br><span class="line"></span><br><span class="line">sp30</span><br></pre></td></tr></table></figure>
+<p>#当然要有 ssh免密配置，linux环境变量配置等等，以后的文章会进行补充<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">启动ubuntu@sp26:~/apps/spark-1.6.1-bin-hadoop2.6$ sbin/start-all.sh</span><br><span class="line"></span><br><span class="line">http://sp26:8080</span><br><span class="line"></span><br><span class="line">这先是单节点</span><br></pre></td></tr></table></figure></p>
+<p>#spark代码：<br>git地址：<a href="https://github.com/penghaoyou5/SparkLogAnalysis.git" target="_blank" rel="noopener">https://github.com/penghaoyou5/SparkLogAnalysis.git</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://alexguo.net/2018/12/18/大数据日志分析系统-spark进行日志计算/" data-id="cjti2wkrb001ungvwx4qcqhg6" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/spark/">spark</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+
+
+  <nav id="page-nav">
+    
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><a class="extend next" rel="next" href="/page/2/">下一页 &raquo;</a>
+  </nav>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/android/">android</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/java/">java</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/linux/">linux</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/no-sql/">no sql</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/大数据/">大数据</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/家常/">家常</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/常用工具/">常用工具</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/数据库/">数据库</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/网络/">网络</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/EventBus/">EventBus</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NIO/">NIO</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/bin-log/">bin_log</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/">docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/elasticsearch/">elasticsearch</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/filebeat/">filebeat</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/flume/">flume</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/gitlab/">gitlab</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hbase/">hbase</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hdfs/">hdfs</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/http/">http</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java基础/">java基础</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/jvm/">jvm</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/kafka/">kafka</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux/">linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/logstash/">logstash</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/logstash-forward/">logstash-forward</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mongodb/">mongodb</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/">mysql</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/netty/">netty</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/pcloud/">pcloud</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/rocketMQ/">rocketMQ</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/spark/">spark</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/spring/">spring</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/spring-cloud/">spring cloud</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/spring-cloud-stream/">spring cloud stream</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/spring-rabbitMQ/">spring rabbitMQ</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/其他/">其他</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/数据采集/">数据采集</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/日志分析/">日志分析</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/EventBus/" style="font-size: 10px;">EventBus</a> <a href="/tags/NIO/" style="font-size: 10px;">NIO</a> <a href="/tags/bin-log/" style="font-size: 13.33px;">bin_log</a> <a href="/tags/docker/" style="font-size: 13.33px;">docker</a> <a href="/tags/elasticsearch/" style="font-size: 10px;">elasticsearch</a> <a href="/tags/filebeat/" style="font-size: 10px;">filebeat</a> <a href="/tags/flume/" style="font-size: 10px;">flume</a> <a href="/tags/git/" style="font-size: 10px;">git</a> <a href="/tags/gitlab/" style="font-size: 10px;">gitlab</a> <a href="/tags/hbase/" style="font-size: 10px;">hbase</a> <a href="/tags/hdfs/" style="font-size: 10px;">hdfs</a> <a href="/tags/http/" style="font-size: 10px;">http</a> <a href="/tags/java基础/" style="font-size: 10px;">java基础</a> <a href="/tags/jvm/" style="font-size: 13.33px;">jvm</a> <a href="/tags/kafka/" style="font-size: 10px;">kafka</a> <a href="/tags/linux/" style="font-size: 10px;">linux</a> <a href="/tags/logstash/" style="font-size: 10px;">logstash</a> <a href="/tags/logstash-forward/" style="font-size: 10px;">logstash-forward</a> <a href="/tags/mongodb/" style="font-size: 10px;">mongodb</a> <a href="/tags/mysql/" style="font-size: 16.67px;">mysql</a> <a href="/tags/netty/" style="font-size: 10px;">netty</a> <a href="/tags/pcloud/" style="font-size: 20px;">pcloud</a> <a href="/tags/rocketMQ/" style="font-size: 10px;">rocketMQ</a> <a href="/tags/spark/" style="font-size: 10px;">spark</a> <a href="/tags/spring/" style="font-size: 10px;">spring</a> <a href="/tags/spring-cloud/" style="font-size: 10px;">spring cloud</a> <a href="/tags/spring-cloud-stream/" style="font-size: 10px;">spring cloud stream</a> <a href="/tags/spring-rabbitMQ/" style="font-size: 10px;">spring rabbitMQ</a> <a href="/tags/其他/" style="font-size: 13.33px;">其他</a> <a href="/tags/数据采集/" style="font-size: 10px;">数据采集</a> <a href="/tags/日志分析/" style="font-size: 10px;">日志分析</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">十二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">十一月 2018</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2018/12/28/MySQL的binlog日志/">MySQL的binlog日志</a>
+          </li>
+        
+          <li>
+            <a href="/2018/12/28/大数据之数据采集方法/">大数据之数据采集方法</a>
+          </li>
+        
+          <li>
+            <a href="/2018/12/27/深入理解mongodb和hbase区别/">深入理解mongodb和hbase区别</a>
+          </li>
+        
+          <li>
+            <a href="/2018/12/19/大数据采集方案：mysql-binlog-注意点/">大数据采集方案：mysql-binlog 注意点</a>
+          </li>
+        
+          <li>
+            <a href="/2018/12/19/jvm常见问题知识/">jvm常见问题知识</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2019 Alex Guo<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

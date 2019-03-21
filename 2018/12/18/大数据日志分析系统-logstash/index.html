@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  
+
+  
+  <title>大数据日志分析系统-logstash | 最终幻想</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="logstash简介Logstash 是一个开源的数据收集引擎，它具有备实时数据传输能力。它可以统一过滤来自不同源的数据，并按照开发者的制定的规范输出到目的地。 logstash-2.2.2的配置：从logstash-forward 到kafka的配置1234567891011121314151617181920212223242526272829ubuntu@sp1:~/logstashBefo">
+<meta name="keywords" content="logstash">
+<meta property="og:type" content="article">
+<meta property="og:title" content="大数据日志分析系统-logstash">
+<meta property="og:url" content="https://alexguo.net/2018/12/18/大数据日志分析系统-logstash/index.html">
+<meta property="og:site_name" content="最终幻想">
+<meta property="og:description" content="logstash简介Logstash 是一个开源的数据收集引擎，它具有备实时数据传输能力。它可以统一过滤来自不同源的数据，并按照开发者的制定的规范输出到目的地。 logstash-2.2.2的配置：从logstash-forward 到kafka的配置1234567891011121314151617181920212223242526272829ubuntu@sp1:~/logstashBefo">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-03-21T03:29:36.565Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="大数据日志分析系统-logstash">
+<meta name="twitter:description" content="logstash简介Logstash 是一个开源的数据收集引擎，它具有备实时数据传输能力。它可以统一过滤来自不同源的数据，并按照开发者的制定的规范输出到目的地。 logstash-2.2.2的配置：从logstash-forward 到kafka的配置1234567891011121314151617181920212223242526272829ubuntu@sp1:~/logstashBefo">
+  
+    <link rel="alternate" href="/atom.xml" title="最终幻想" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.ico">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">最终幻想</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">远离舒适区，忙碌起来！</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="搜索"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://alexguo.net"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-大数据日志分析系统-logstash" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/12/18/大数据日志分析系统-logstash/" class="article-date">
+  <time datetime="2018-12-18T07:27:45.000Z" itemprop="datePublished">2018-12-18</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/大数据/">大数据</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      大数据日志分析系统-logstash
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="logstash简介"><a href="#logstash简介" class="headerlink" title="logstash简介"></a>logstash简介</h1><p>Logstash 是一个开源的数据收集引擎，它具有备实时数据传输能力。它可以统一过滤来自不同源的数据，并按照开发者的制定的规范输出到目的地。</p>
+<h1 id="logstash-2-2-2的配置："><a href="#logstash-2-2-2的配置：" class="headerlink" title="logstash-2.2.2的配置："></a>logstash-2.2.2的配置：</h1><h2 id="从logstash-forward-到kafka的配置"><a href="#从logstash-forward-到kafka的配置" class="headerlink" title="从logstash-forward 到kafka的配置"></a>从logstash-forward 到kafka的配置</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">ubuntu@sp1:~/logstashBeforeChangeConf$ cat /home/ubuntu/logstash-2.2.2/config/before-kafka-access.conf</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">input &#123;</span><br><span class="line">      lumberjack &#123;</span><br><span class="line">                    port =&gt; &quot;5044&quot;</span><br><span class="line">                    ssl_certificate =&gt; &quot;/home/ubuntu/logstash-2.2.2/config/lumberjack.crt&quot;</span><br><span class="line">                    ssl_key =&gt;  &quot;/home/ubuntu/logstash-2.2.2/config/lumberjack.key&quot;</span><br><span class="line">                    type =&gt; &quot;fc_access&quot;</span><br><span class="line">                  &#125;</span><br><span class="line">      &#125;</span><br><span class="line"></span><br><span class="line">output &#123;</span><br><span class="line">       if &quot;_grokparsefailure&quot; not in [tags] &#123;</span><br><span class="line">    #       stdout &#123; codec =&gt; rubydebug &#125;</span><br><span class="line">       kafka &#123;</span><br><span class="line">                topic_id =&gt; &quot;kafka_es&quot;</span><br><span class="line">                bootstrap_servers =&gt; &quot;sp1:9092,sp2:9092,sp3:9092,sp4:9092,sp5:9092,sp6:9092,sp7:9092&quot;</span><br><span class="line">                compression_type =&gt; &quot;snappy&quot; </span><br><span class="line">                acks =&gt; [&quot;1&quot;]</span><br><span class="line">                value_serializer =&gt; &quot;org.apache.kafka.common.serialization.StringSerializer&quot;</span><br><span class="line">                timeout_ms =&gt; 10000</span><br><span class="line">                retries =&gt; 5</span><br><span class="line">                retry_backoff_ms =&gt; 100</span><br><span class="line">                send_buffer_bytes =&gt; 102400   </span><br><span class="line">                workers =&gt; 2</span><br><span class="line">             &#125;</span><br><span class="line">      &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="从kafka到es配置"><a href="#从kafka到es配置" class="headerlink" title="从kafka到es配置"></a>从kafka到es配置</h2><p>其中包括了对日志各个字段的解析,以及对异常日志过滤（同时注意其中过滤了 不属于当前时间前后5天的时间的日志，为了防止异常日志创建索引过多导致es报红）<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br></pre></td><td class="code"><pre><span class="line">ubuntu@sp1:~/logstashAfterChangeConf$ cat /home/ubuntu/logstash-2.2.2/config/after-kafa-access.conf</span><br><span class="line"></span><br><span class="line">input &#123;</span><br><span class="line">      kafka &#123;</span><br><span class="line">        topic_id =&gt; &quot;kafka_es&quot;</span><br><span class="line">        group_id =&gt; &quot;kafka_es&quot;</span><br><span class="line">        zk_connect =&gt; &quot;sp1:2181,sp2:2181,sp3:2181,sp4:2181,sp5:2181,sp6:2181,sp7:2181&quot; </span><br><span class="line">        consumer_threads =&gt; 1</span><br><span class="line">        consumer_restart_on_error =&gt; true</span><br><span class="line">        consumer_restart_sleep_ms =&gt; 5000</span><br><span class="line">        decorate_events =&gt; true</span><br><span class="line">        consumer_timeout_ms =&gt; 1000</span><br><span class="line">        queue_size =&gt; 100</span><br><span class="line">        auto_offset_reset =&gt; &quot;smallest&quot;</span><br><span class="line">        rebalance_max_retries =&gt; 50</span><br><span class="line">      &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">filter &#123;</span><br><span class="line">       mutate &#123;</span><br><span class="line">             add_field =&gt; [ &quot;messageClone&quot;, &quot;%&#123;message&#125;&quot; ]</span><br><span class="line">       &#125;</span><br><span class="line"></span><br><span class="line">       mutate &#123;</span><br><span class="line">             split =&gt; &#123; &quot;messageClone&quot; =&gt; &apos;&quot;&apos; &#125;</span><br><span class="line">            add_field =&gt; &#123;&quot;agent&quot; =&gt; &quot;%&#123;[messageClone][3]&#125;&quot;&#125;</span><br><span class="line"></span><br><span class="line">       &#125;</span><br><span class="line">       useragent &#123; </span><br><span class="line">              source =&gt; &quot;agent&quot; </span><br><span class="line">       &#125;</span><br><span class="line"></span><br><span class="line">       mutate &#123;</span><br><span class="line">            split =&gt; &#123; &quot;message&quot; =&gt; &quot; &quot; &#125;</span><br><span class="line">            add_field =&gt; &#123;&quot;timestamp&quot; =&gt; &quot;%&#123;[message][0]&#125;&quot;&#125;</span><br><span class="line">            add_field =&gt; &#123;&quot;reqtime&quot; =&gt; &quot;%&#123;[message][1]&#125;&quot;&#125;</span><br><span class="line">            add_field =&gt; &#123;&quot;clientIP&quot; =&gt; &quot;%&#123;[message][2]&#125;&quot;&#125;</span><br><span class="line">            add_field =&gt; &#123;&quot;squidCache&quot; =&gt; &quot;%&#123;[message][3]&#125;&quot;&#125;</span><br><span class="line">            add_field =&gt; &#123;&quot;repsize&quot; =&gt; &quot;%&#123;[message][4]&#125;&quot;&#125;</span><br><span class="line">            add_field =&gt; &#123;&quot;reqMethod&quot; =&gt; &quot;%&#123;[message][5]&#125;&quot;&#125;</span><br><span class="line">            add_field =&gt; &#123;&quot;requestURL&quot; =&gt; &quot;%&#123;[message][6]&#125;&quot;&#125;</span><br><span class="line">            add_field =&gt; &#123;&quot;username&quot; =&gt; &quot;%&#123;[message][7]&#125;&quot;&#125;</span><br><span class="line">            add_field =&gt; &#123;&quot;requestOriginSite&quot; =&gt; &quot;%&#123;[message][8]&#125;&quot;&#125;</span><br><span class="line">            add_field =&gt; &#123;&quot;mime&quot; =&gt; &quot;%&#123;[message][9]&#125;&quot;&#125;</span><br><span class="line">            add_field =&gt; &#123;&quot;referer&quot; =&gt; &quot;%&#123;[message][10]&#125;&quot;&#125;</span><br><span class="line">            add_field =&gt; &#123;&quot;agentCheck&quot; =&gt; &quot;%&#123;[message][11]&#125;&quot;&#125;</span><br><span class="line">            add_field =&gt; &#123;&quot;dnsGroup&quot; =&gt; &quot;%&#123;[message][-1]&#125;&quot;&#125;</span><br><span class="line">            remove_field =&gt; [&quot;offset&quot;, &quot;kafka&quot;, &quot;@version&quot;, &quot;file&quot;, &quot;message&quot;, &quot;messageClone&quot;]</span><br><span class="line"></span><br><span class="line">       &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">       if [agentCheck] =~ &quot;ChinaCache&quot; &#123;</span><br><span class="line"></span><br><span class="line">         grok &#123; match =&gt; &#123; &quot;agentCheck&quot; =&gt; &quot;OOPS&quot; &#125; &#125;</span><br><span class="line"></span><br><span class="line">       &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">       mutate &#123;</span><br><span class="line"></span><br><span class="line">          convert =&gt; &#123;</span><br><span class="line"></span><br><span class="line">                &quot;timestamp&quot; =&gt; &quot;float&quot;	   </span><br><span class="line"></span><br><span class="line">            &quot;reqtime&quot; =&gt; &quot;integer&quot;</span><br><span class="line"></span><br><span class="line">          &quot;repsize&quot; =&gt; &quot;integer&quot;</span><br><span class="line"></span><br><span class="line">          &#125;</span><br><span class="line"></span><br><span class="line">      remove_field =&gt; [&quot;agentCheck&quot;]</span><br><span class="line"></span><br><span class="line">       &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">       ruby &#123;</span><br><span class="line"></span><br><span class="line">       code =&gt; &quot;event[&apos;timestamp_str&apos;] = Time.at(event[&apos;timestamp&apos;]).strftime(&apos;%Y-%m-%dT%H:%M:%S.%LZ&apos;)&quot;</span><br><span class="line"></span><br><span class="line">       &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">       date &#123; match =&gt; [ &quot;timestamp_str&quot;, &quot;ISO8601&quot; ] </span><br><span class="line"></span><br><span class="line">       &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">       mutate &#123;</span><br><span class="line"></span><br><span class="line">             split =&gt; &#123; &quot;requestURL&quot; =&gt; &apos;/&apos; &#125;</span><br><span class="line"></span><br><span class="line">      add_field =&gt; &#123;&quot;uriHost&quot; =&gt; &quot;%&#123;[requestURL][2]&#125;&quot;&#125;</span><br><span class="line"></span><br><span class="line">      remove_field =&gt; [&quot;timestamp_str&quot;]</span><br><span class="line"></span><br><span class="line">       &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">       mutate &#123;</span><br><span class="line"></span><br><span class="line">             join =&gt; &#123; &quot;requestURL&quot; =&gt; &apos;/&apos; &#125;</span><br><span class="line"></span><br><span class="line">       &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">       ruby &#123;</span><br><span class="line"></span><br><span class="line">              code =&gt; &quot;event.cancel if 5 * 24 * 3600 &lt; (event[&apos;@timestamp&apos;]-::Time.now).abs&quot;</span><br><span class="line"></span><br><span class="line">       &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">output &#123;</span><br><span class="line"></span><br><span class="line">if &quot;ChinaCache&quot; not in [agent] &#123;</span><br><span class="line"></span><br><span class="line">#                   stdout &#123; codec =&gt; &quot;rubydebug&quot; &#125;</span><br><span class="line"></span><br><span class="line">                   elasticsearch &#123;</span><br><span class="line"></span><br><span class="line">                         index =&gt; &quot;logstash-%&#123;+YYYY.MM.dd.HH&#125;&quot;</span><br><span class="line"></span><br><span class="line">                         workers =&gt; 1</span><br><span class="line"></span><br><span class="line">                         flush_size =&gt; 5000</span><br><span class="line"></span><br><span class="line">                         idle_flush_time =&gt; 1</span><br><span class="line"></span><br><span class="line">                         hosts =&gt; [&quot;es-ip-1:9200&quot;,&quot;es-ip-2:9200&quot;,&quot;es-ip-3:9200&quot;,&quot;es-ip-4:9200&quot;,&quot;es-ip-5:9200&quot;,&quot;es-ip-6:9200&quot;,&quot;es-ip-7:9200&quot;]</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">                         &#125;</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h1 id="启动命令："><a href="#启动命令：" class="headerlink" title="启动命令："></a>启动命令：</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nohup /home/ubuntu/logstash-2.2.2/bin/logstash -f /home/ubuntu/logstash-2.2.2/config/after-kafa-access.conf 2&gt;&amp;1 &gt; /home/ubuntu/logstash-2.2.2/logs/logstash-after-kafka-access.log &amp;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nohup /home/ubuntu/logstash-2.2.2/bin/logstash -f /home/ubuntu/logstash-2.2.2/config/before-kafka-access.conf 2&gt;&amp;1 &gt; /home/ubuntu/logstash-2.2.2/logs/logstash-before-kafka.log &amp;</span><br></pre></td></tr></table></figure>
+<h1 id="logstash-6-1-1配置"><a href="#logstash-6-1-1配置" class="headerlink" title="logstash-6.1.1配置"></a>logstash-6.1.1配置</h1><p>##从filbeat到kafka的配置<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line">ubuntu@sp26:~/apps/logstash-6.1.1$ cat filebeat5055-kafkasp26-3.conf</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">input &#123;</span><br><span class="line"></span><br><span class="line">    beats &#123;</span><br><span class="line"></span><br><span class="line">        port =&gt; &quot;5055&quot;</span><br><span class="line"></span><br><span class="line">type =&gt; &quot;log&quot;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">output &#123;</span><br><span class="line"></span><br><span class="line">#   stdout &#123; codec =&gt; rubydebug &#125;</span><br><span class="line"></span><br><span class="line">  kafka &#123;</span><br><span class="line"></span><br><span class="line">    codec =&gt; &quot;json&quot;</span><br><span class="line"></span><br><span class="line">    bootstrap_servers =&gt; &quot;37:9092,38:9092,39:9092,40:9092,41:9092&quot;</span><br><span class="line"></span><br><span class="line">    topic_id =&gt; &quot;test&quot;</span><br><span class="line"></span><br><span class="line">compression_type =&gt; &quot;snappy&quot;</span><br><span class="line"></span><br><span class="line">value_serializer =&gt; &quot;org.apache.kafka.common.serialization.StringSerializer&quot;</span><br><span class="line"></span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>#检测<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/home/ubuntu/apps/logstash-6.1.1/bin/logstash -f /home/ubuntu/apps/logstash-6.1.1/filebeat5055-kafkasp26-3.conf  --config.test_and_exit</span><br></pre></td></tr></table></figure></p>
+<p>#启动<br><code>nohup /home/ubuntu/apps/logstash-6.1.1/bin/logstash -f /home/ubuntu/apps/logstash-6.1.1/filebeat5055-kafkasp26-3.conf --config.reload.automatic   2&gt;&amp;1 &gt;  /home/ubuntu/apps/logstash-6.1.1/logs/filebeat5055-kafkasp26-3.log  &amp;</code>　</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://alexguo.net/2018/12/18/大数据日志分析系统-logstash/" data-id="cjti2wkr9001rngvwsey5opej" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/logstash/">logstash</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2018/12/18/大数据日志分析系统-elasticsearch/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          大数据日志分析系统-elasticsearch
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/12/18/大数据日志分析系统-缓存组件kafka/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">大数据日志分析系统-缓存组件kafka</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/android/">android</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/java/">java</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/linux/">linux</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/no-sql/">no sql</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/大数据/">大数据</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/家常/">家常</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/常用工具/">常用工具</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/数据库/">数据库</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/网络/">网络</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/EventBus/">EventBus</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NIO/">NIO</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/bin-log/">bin_log</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/">docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/elasticsearch/">elasticsearch</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/filebeat/">filebeat</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/flume/">flume</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/gitlab/">gitlab</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hbase/">hbase</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hdfs/">hdfs</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/http/">http</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java基础/">java基础</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/jvm/">jvm</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/kafka/">kafka</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux/">linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/logstash/">logstash</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/logstash-forward/">logstash-forward</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mongodb/">mongodb</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/">mysql</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/netty/">netty</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/pcloud/">pcloud</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/rocketMQ/">rocketMQ</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/spark/">spark</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/spring/">spring</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/spring-cloud/">spring cloud</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/spring-cloud-stream/">spring cloud stream</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/spring-rabbitMQ/">spring rabbitMQ</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/其他/">其他</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/数据采集/">数据采集</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/日志分析/">日志分析</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/EventBus/" style="font-size: 10px;">EventBus</a> <a href="/tags/NIO/" style="font-size: 10px;">NIO</a> <a href="/tags/bin-log/" style="font-size: 13.33px;">bin_log</a> <a href="/tags/docker/" style="font-size: 13.33px;">docker</a> <a href="/tags/elasticsearch/" style="font-size: 10px;">elasticsearch</a> <a href="/tags/filebeat/" style="font-size: 10px;">filebeat</a> <a href="/tags/flume/" style="font-size: 10px;">flume</a> <a href="/tags/git/" style="font-size: 10px;">git</a> <a href="/tags/gitlab/" style="font-size: 10px;">gitlab</a> <a href="/tags/hbase/" style="font-size: 10px;">hbase</a> <a href="/tags/hdfs/" style="font-size: 10px;">hdfs</a> <a href="/tags/http/" style="font-size: 10px;">http</a> <a href="/tags/java基础/" style="font-size: 10px;">java基础</a> <a href="/tags/jvm/" style="font-size: 13.33px;">jvm</a> <a href="/tags/kafka/" style="font-size: 10px;">kafka</a> <a href="/tags/linux/" style="font-size: 10px;">linux</a> <a href="/tags/logstash/" style="font-size: 10px;">logstash</a> <a href="/tags/logstash-forward/" style="font-size: 10px;">logstash-forward</a> <a href="/tags/mongodb/" style="font-size: 10px;">mongodb</a> <a href="/tags/mysql/" style="font-size: 16.67px;">mysql</a> <a href="/tags/netty/" style="font-size: 10px;">netty</a> <a href="/tags/pcloud/" style="font-size: 20px;">pcloud</a> <a href="/tags/rocketMQ/" style="font-size: 10px;">rocketMQ</a> <a href="/tags/spark/" style="font-size: 10px;">spark</a> <a href="/tags/spring/" style="font-size: 10px;">spring</a> <a href="/tags/spring-cloud/" style="font-size: 10px;">spring cloud</a> <a href="/tags/spring-cloud-stream/" style="font-size: 10px;">spring cloud stream</a> <a href="/tags/spring-rabbitMQ/" style="font-size: 10px;">spring rabbitMQ</a> <a href="/tags/其他/" style="font-size: 13.33px;">其他</a> <a href="/tags/数据采集/" style="font-size: 10px;">数据采集</a> <a href="/tags/日志分析/" style="font-size: 10px;">日志分析</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">十二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">十一月 2018</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2018/12/28/MySQL的binlog日志/">MySQL的binlog日志</a>
+          </li>
+        
+          <li>
+            <a href="/2018/12/28/大数据之数据采集方法/">大数据之数据采集方法</a>
+          </li>
+        
+          <li>
+            <a href="/2018/12/27/深入理解mongodb和hbase区别/">深入理解mongodb和hbase区别</a>
+          </li>
+        
+          <li>
+            <a href="/2018/12/19/大数据采集方案：mysql-binlog-注意点/">大数据采集方案：mysql-binlog 注意点</a>
+          </li>
+        
+          <li>
+            <a href="/2018/12/19/jvm常见问题知识/">jvm常见问题知识</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2019 Alex Guo<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

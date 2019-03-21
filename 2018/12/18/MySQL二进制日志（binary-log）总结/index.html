@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  
+
+  
+  <title>MySQL二进制日志（binary log）总结 | 最终幻想</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="默认的innodb引擎，开启了二进制日志，对于事务性的操作，是要事物完成的时候写入二进制日志，事物提交之前，执行的写入性操作会被缓存起来，直到整个事物完成，mysqld进程会将整个事物写入二进制日志。当事物开始的时候，会按照binlog_cache_size系统变量指定的值分配内容空间，如果指定的binlog_cache_size缓存空间不够，执行的事务性操作回滚并提示失败。 1234567891">
+<meta name="keywords" content="mysql">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MySQL二进制日志（binary log）总结">
+<meta property="og:url" content="https://alexguo.net/2018/12/18/MySQL二进制日志（binary-log）总结/index.html">
+<meta property="og:site_name" content="最终幻想">
+<meta property="og:description" content="默认的innodb引擎，开启了二进制日志，对于事务性的操作，是要事物完成的时候写入二进制日志，事物提交之前，执行的写入性操作会被缓存起来，直到整个事物完成，mysqld进程会将整个事物写入二进制日志。当事物开始的时候，会按照binlog_cache_size系统变量指定的值分配内容空间，如果指定的binlog_cache_size缓存空间不够，执行的事务性操作回滚并提示失败。 1234567891">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-03-21T03:29:36.559Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="MySQL二进制日志（binary log）总结">
+<meta name="twitter:description" content="默认的innodb引擎，开启了二进制日志，对于事务性的操作，是要事物完成的时候写入二进制日志，事物提交之前，执行的写入性操作会被缓存起来，直到整个事物完成，mysqld进程会将整个事物写入二进制日志。当事物开始的时候，会按照binlog_cache_size系统变量指定的值分配内容空间，如果指定的binlog_cache_size缓存空间不够，执行的事务性操作回滚并提示失败。 1234567891">
+  
+    <link rel="alternate" href="/atom.xml" title="最终幻想" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.ico">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">最终幻想</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">远离舒适区，忙碌起来！</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="搜索"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://alexguo.net"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-MySQL二进制日志（binary-log）总结" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/12/18/MySQL二进制日志（binary-log）总结/" class="article-date">
+  <time datetime="2018-12-18T08:59:13.000Z" itemprop="datePublished">2018-12-18</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      MySQL二进制日志（binary log）总结
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>默认的innodb引擎，开启了二进制日志，<br>对于事务性的操作，是要事物完成的时候写入二进制日志，事物提交之前，执行的写入性操作会被缓存起来，直到整个事物完成，mysqld进程会将整个事物写入二进制日志。<br>当事物开始的时候，会按照binlog_cache_size系统变量指定的值分配内容空间，如果指定的binlog_cache_size缓存空间不够，执行的事务性操作回滚并提示失败。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show variables like &apos;%binlog%&apos;;</span><br><span class="line">+--------------------------------------------+----------------------+</span><br><span class="line">| Variable_name                              | Value                |</span><br><span class="line">+--------------------------------------------+----------------------+</span><br><span class="line">| binlog_cache_size                          | 32768                |</span><br><span class="line">| binlog_checksum                            | CRC32                |</span><br><span class="line">| binlog_direct_non_transactional_updates    | OFF                  |</span><br><span class="line">| binlog_error_action                        | ABORT_SERVER         |</span><br><span class="line">| binlog_format                              | ROW                  |</span><br><span class="line">| binlog_group_commit_sync_delay             | 0                    |</span><br><span class="line">| binlog_group_commit_sync_no_delay_count    | 0                    |</span><br><span class="line">| binlog_gtid_simple_recovery                | ON                   |</span><br><span class="line">| binlog_max_flush_queue_time                | 0                    |</span><br><span class="line">| binlog_order_commits                       | ON                   |</span><br><span class="line">| binlog_row_image                           | FULL                 |</span><br><span class="line">| binlog_rows_query_log_events               | OFF                  |</span><br><span class="line">| binlog_stmt_cache_size                     | 32768                |</span><br><span class="line">| binlog_transaction_dependency_history_size | 25000                |</span><br><span class="line">| binlog_transaction_dependency_tracking     | COMMIT_ORDER         |</span><br><span class="line">| innodb_api_enable_binlog                   | OFF                  |</span><br><span class="line">| innodb_locks_unsafe_for_binlog             | OFF                  |</span><br><span class="line">| log_statements_unsafe_for_binlog           | ON                   |</span><br><span class="line">| max_binlog_cache_size                      | 18446744073709547520 |</span><br><span class="line">| max_binlog_size                            | 1073741824           |</span><br><span class="line">| max_binlog_stmt_cache_size                 | 18446744073709547520 |</span><br><span class="line">| sync_binlog                                | 1                    |</span><br><span class="line">+--------------------------------------------+----------------------+</span><br><span class="line">22 rows in set (0.46 sec)</span><br><span class="line"></span><br><span class="line">mysql&gt;</span><br></pre></td></tr></table></figure>
+<h1 id="什么是二进制日志？"><a href="#什么是二进制日志？" class="headerlink" title="什么是二进制日志？"></a>什么是二进制日志？</h1><p>　　用来记录操作MySQL数据库中的写入性操作（增删改，但不包括查询），相当于sqlserver中的完整恢复模式下的事务日志文件。</p>
+<h1 id="二进制日志的作用？"><a href="#二进制日志的作用？" class="headerlink" title="二进制日志的作用？"></a>二进制日志的作用？</h1><p>　　1，用于复制，配置了主从复制的时候，主服务器会将其产生的二进制日志发送到slave端，slave端会利用这个二进制日志的信息在本地重做，实现主从同步<br>　　2，用户恢复，MySQL可以在全备和差异备份的基础上，利用二进制日志进行基于时间点或者事物Id的恢复操作。原理雷同于主从复制的日志重做。</p>
+<h1 id="二进制日志（binary-log）的相关参数信息"><a href="#二进制日志（binary-log）的相关参数信息" class="headerlink" title="二进制日志（binary log）的相关参数信息"></a>二进制日志（binary log）的相关参数信息</h1><p>1，开启二进制日志<br>开启二进制日志，需要指定一个log-bin参数的路径，比如：log_bin=/var/lib/mysql/mysql-bin<br>　开始二进制日志之后会自动生成一个管理二进制日志的log_bin_index文件。log_bin选项也显示为on，也即开启了二进制日志。</p>
+<h2 id="在my-inf主配置文件中直接添加三行"><a href="#在my-inf主配置文件中直接添加三行" class="headerlink" title="在my.inf主配置文件中直接添加三行"></a>在my.inf主配置文件中直接添加三行</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">log_bin=ON</span><br><span class="line">log_bin_basename=/var/lib/mysql/mysql-bin</span><br><span class="line">log_bin_index=/var/lib/mysql/mysql-bin.index</span><br></pre></td></tr></table></figure>
+<p>三个参数来指定，<br>第一个参数是打开binlog日志<br>第二个参数是binlog日志的基本文件名，后面会追加标识来表示每一个文件<br>第三个参数指定的是binlog文件的索引文件，这个文件管理了所有的binlog文件的目录</p>
+<p>当然也有一种简单的配置，一个参数就可以搞定<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">log-bin=/var/lib/mysql/mysql-bin</span><br></pre></td></tr></table></figure></p>
+<p>这一个参数的作用和上面三个的作用是相同的，mysql会根据这个配置自动设置log_bin为on状态，自动设置log_bin_index文件为你指定的文件名后跟.index</p>
+<p>这些配置完毕之后对于5.7以下版本应该是可以了，但是我们这个时候用的如果是5.7及以上版本的话，重启mysql服务会报错。这个时候我们必须还要指定一个参数<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">server-id=123454</span><br></pre></td></tr></table></figure></p>
+<p>随机指定一个不能和其他集群中机器重名的字符串，如果只有一台机器，那就可以随便指定了</p>
+<p>有了上述的配置之后，我们就可以重新启动我们的mysql了<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">service mysqld restart</span><br></pre></td></tr></table></figure></p>
+<p>启动成功之后，我们可以登陆查看我们的配置是否起作用<br>show variables like ‘%log_bin%’</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://alexguo.net/2018/12/18/MySQL二进制日志（binary-log）总结/" data-id="cjti2wkqb0005ngvw4awz46hk" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mysql/">mysql</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2018/12/19/JVM性能调优监控工具jps、jstack、jmap、jhat、jstat、hprof使用详解/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          JVM性能调优监控工具jps、jstack、jmap、jhat、jstat、hprof使用详解
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/12/18/大数据日志分析系统-python脚本利用es聚合计算/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">大数据日志分析系统-python脚本利用es聚合计算</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/android/">android</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/java/">java</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/linux/">linux</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/no-sql/">no sql</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/大数据/">大数据</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/家常/">家常</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/常用工具/">常用工具</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/数据库/">数据库</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/网络/">网络</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/EventBus/">EventBus</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NIO/">NIO</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/bin-log/">bin_log</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/">docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/elasticsearch/">elasticsearch</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/filebeat/">filebeat</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/flume/">flume</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/gitlab/">gitlab</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hbase/">hbase</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hdfs/">hdfs</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/http/">http</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java基础/">java基础</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/jvm/">jvm</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/kafka/">kafka</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux/">linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/logstash/">logstash</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/logstash-forward/">logstash-forward</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mongodb/">mongodb</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/">mysql</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/netty/">netty</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/pcloud/">pcloud</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/rocketMQ/">rocketMQ</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/spark/">spark</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/spring/">spring</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/spring-cloud/">spring cloud</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/spring-cloud-stream/">spring cloud stream</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/spring-rabbitMQ/">spring rabbitMQ</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/其他/">其他</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/数据采集/">数据采集</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/日志分析/">日志分析</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/EventBus/" style="font-size: 10px;">EventBus</a> <a href="/tags/NIO/" style="font-size: 10px;">NIO</a> <a href="/tags/bin-log/" style="font-size: 13.33px;">bin_log</a> <a href="/tags/docker/" style="font-size: 13.33px;">docker</a> <a href="/tags/elasticsearch/" style="font-size: 10px;">elasticsearch</a> <a href="/tags/filebeat/" style="font-size: 10px;">filebeat</a> <a href="/tags/flume/" style="font-size: 10px;">flume</a> <a href="/tags/git/" style="font-size: 10px;">git</a> <a href="/tags/gitlab/" style="font-size: 10px;">gitlab</a> <a href="/tags/hbase/" style="font-size: 10px;">hbase</a> <a href="/tags/hdfs/" style="font-size: 10px;">hdfs</a> <a href="/tags/http/" style="font-size: 10px;">http</a> <a href="/tags/java基础/" style="font-size: 10px;">java基础</a> <a href="/tags/jvm/" style="font-size: 13.33px;">jvm</a> <a href="/tags/kafka/" style="font-size: 10px;">kafka</a> <a href="/tags/linux/" style="font-size: 10px;">linux</a> <a href="/tags/logstash/" style="font-size: 10px;">logstash</a> <a href="/tags/logstash-forward/" style="font-size: 10px;">logstash-forward</a> <a href="/tags/mongodb/" style="font-size: 10px;">mongodb</a> <a href="/tags/mysql/" style="font-size: 16.67px;">mysql</a> <a href="/tags/netty/" style="font-size: 10px;">netty</a> <a href="/tags/pcloud/" style="font-size: 20px;">pcloud</a> <a href="/tags/rocketMQ/" style="font-size: 10px;">rocketMQ</a> <a href="/tags/spark/" style="font-size: 10px;">spark</a> <a href="/tags/spring/" style="font-size: 10px;">spring</a> <a href="/tags/spring-cloud/" style="font-size: 10px;">spring cloud</a> <a href="/tags/spring-cloud-stream/" style="font-size: 10px;">spring cloud stream</a> <a href="/tags/spring-rabbitMQ/" style="font-size: 10px;">spring rabbitMQ</a> <a href="/tags/其他/" style="font-size: 13.33px;">其他</a> <a href="/tags/数据采集/" style="font-size: 10px;">数据采集</a> <a href="/tags/日志分析/" style="font-size: 10px;">日志分析</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">十二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">十一月 2018</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2018/12/28/MySQL的binlog日志/">MySQL的binlog日志</a>
+          </li>
+        
+          <li>
+            <a href="/2018/12/28/大数据之数据采集方法/">大数据之数据采集方法</a>
+          </li>
+        
+          <li>
+            <a href="/2018/12/27/深入理解mongodb和hbase区别/">深入理解mongodb和hbase区别</a>
+          </li>
+        
+          <li>
+            <a href="/2018/12/19/大数据采集方案：mysql-binlog-注意点/">大数据采集方案：mysql-binlog 注意点</a>
+          </li>
+        
+          <li>
+            <a href="/2018/12/19/jvm常见问题知识/">jvm常见问题知识</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2019 Alex Guo<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

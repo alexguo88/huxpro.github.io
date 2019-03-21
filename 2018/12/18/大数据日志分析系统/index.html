@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  
+
+  
+  <title>大数据日志分析系统 | 最终幻想</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="原始日志量每小时高的是否达到了 45303452条日志（四千五百多万条原始日志） ，某天日志量（这个随便选的）422110779 条（4亿两千多万） 需求 1）对原始日志按域名进行分析包括： 请求数分析、独立IP分析、PV分析、地区分布运营商分布分析（根据ip计算）、浏览器操作系统分布分析（根据原始日志的agent进行分析）、热点页面分析、文件类型分析 2）原始日志按域名、按天、按小时进行打包。">
+<meta name="keywords" content="日志分析">
+<meta property="og:type" content="article">
+<meta property="og:title" content="大数据日志分析系统">
+<meta property="og:url" content="https://alexguo.net/2018/12/18/大数据日志分析系统/index.html">
+<meta property="og:site_name" content="最终幻想">
+<meta property="og:description" content="原始日志量每小时高的是否达到了 45303452条日志（四千五百多万条原始日志） ，某天日志量（这个随便选的）422110779 条（4亿两千多万） 需求 1）对原始日志按域名进行分析包括： 请求数分析、独立IP分析、PV分析、地区分布运营商分布分析（根据ip计算）、浏览器操作系统分布分析（根据原始日志的agent进行分析）、热点页面分析、文件类型分析 2）原始日志按域名、按天、按小时进行打包。">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-03-21T03:29:36.567Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="大数据日志分析系统">
+<meta name="twitter:description" content="原始日志量每小时高的是否达到了 45303452条日志（四千五百多万条原始日志） ，某天日志量（这个随便选的）422110779 条（4亿两千多万） 需求 1）对原始日志按域名进行分析包括： 请求数分析、独立IP分析、PV分析、地区分布运营商分布分析（根据ip计算）、浏览器操作系统分布分析（根据原始日志的agent进行分析）、热点页面分析、文件类型分析 2）原始日志按域名、按天、按小时进行打包。">
+  
+    <link rel="alternate" href="/atom.xml" title="最终幻想" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.ico">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">最终幻想</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">远离舒适区，忙碌起来！</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="搜索"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://alexguo.net"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-大数据日志分析系统" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/12/18/大数据日志分析系统/" class="article-date">
+  <time datetime="2018-12-18T06:27:39.000Z" itemprop="datePublished">2018-12-18</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/大数据/">大数据</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      大数据日志分析系统
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="原始日志量"><a href="#原始日志量" class="headerlink" title="原始日志量"></a>原始日志量</h1><p>每小时高的是否达到了 45303452条日志（四千五百多万条原始日志） ，某天日志量（这个随便选的）422110779 条（4亿两千多万）</p>
+<h1 id="需求"><a href="#需求" class="headerlink" title="需求"></a>需求</h1><ul>
+<li>1）对原始日志按域名进行分析包括： 请求数分析、独立IP分析、PV分析、地区分布运营商分布分析（根据ip计算）、浏览器操作系统分布分析（根据原始日志的agent进行分析）、热点页面分析、文件类型分析</li>
+<li>2）原始日志按域名、按天、按小时进行打包。</li>
+</ul>
+<h1 id="两种方案"><a href="#两种方案" class="headerlink" title="两种方案"></a>两种方案</h1><p>#　方案１</p>
+<ul>
+<li>→logstash-forward(边缘设备)  </li>
+<li>→ logstash (用logstast-before配置文件) </li>
+<li>→ Kafka (同时依赖zookeeper) </li>
+<li>→ logstash (用logstash-after配置文件) </li>
+<li>→ elaticsearch  </li>
+<li>→ python脚本 </li>
+<li>→ 统计日志本地然后上传到hadoop,各种统计结果到elasticsearch（nginx负载均衡）   </li>
+<li>→  界面展示</li>
+</ul>
+<p>边缘节点服务器会产生很多用户请求日志，要对日志进行各种分析和原始日志打包，最终分析结果进行收费、让客户可以获取请求日志各种分析结果、为客户进行原始日志按域名按天按小时分割打包。</p>
+<h1 id="方案２"><a href="#方案２" class="headerlink" title="方案２"></a>方案２</h1><ul>
+<li>–&gt; filebeat(或flume) </li>
+<li>–&gt; logstash </li>
+<li>–&gt; kafka(kafka依赖zookeeper) </li>
+<li>–&gt; spark统计计算 </li>
+<li>–&gt; 统计各种结果到elasticsearch（nginx负载均衡） </li>
+<li>–&gt; 界面展示</li>
+</ul>
+<p>–&gt; flume(自定义sink插件、验证可行待完成)<br>–&gt; 原始日志本地打包<br>–&gt; 原始日志hadoop上传 (当然这里也可以用hbase进行日志存储)</p>
+<h1 id="大数据实时计算需要的几个基本组件（一定要注意版本问题，java大数据机器间通信用的是RPC-而不是restful-api-如果版本不对应很可能出现版本间的兼容问题）："><a href="#大数据实时计算需要的几个基本组件（一定要注意版本问题，java大数据机器间通信用的是RPC-而不是restful-api-如果版本不对应很可能出现版本间的兼容问题）：" class="headerlink" title="大数据实时计算需要的几个基本组件（一定要注意版本问题，java大数据机器间通信用的是RPC 而不是restful_api,如果版本不对应很可能出现版本间的兼容问题）："></a>大数据实时计算需要的几个基本组件（一定要注意版本问题，java大数据机器间通信用的是RPC 而不是restful_api,如果版本不对应很可能出现版本间的兼容问题）：</h1><ul>
+<li>1.日志收集    -从CDN边缘节点服务器进行日志收集</li>
+<li>2.日志缓存    -收集上来的日志存储到一个缓存设备</li>
+<li>3.数据计算    -对收集的日志进行计算，域名请求数分析、地区统计等等</li>
+<li>4.计算结果存储    -对各种分析结果进行存储，要方便查找</li>
+<li>5.日志打包结果存储<h2 id="公司刚开始的日志系统分布："><a href="#公司刚开始的日志系统分布：" class="headerlink" title="公司刚开始的日志系统分布："></a>公司刚开始的日志系统分布：</h2></li>
+<li>logstash-forward (边缘节点日志收集，上传到有logstash的机器)       -》</li>
+<li>kafka  强大的数据缓存组建          （由logstash收集日志到kafka）    -》</li>
+<li>elasticsearch (分布式、可扩展、实时的搜索与数据分析引擎)  (用logstash从kafka取出数据存到es)  -&gt;</li>
+<li>spark（大规模数据计算引擎，从es取出原始日志然后通过spark计算结果）    -》</li>
+<li>elasticsearch （进行计算结果数据存储），hadoop（原始日志打包存储） -》</li>
+<li>nginx  + django服务  进行反向代理、负载均衡、地址隐藏            django进行界面展示-》</li>
+<li>可客户直接访问观看<h2 id="版本"><a href="#版本" class="headerlink" title="版本"></a>版本</h2>zookeeper 3.4.7<br>kafka_2.11-0.8.2.1<br>logstash-2.2.2<br>elasticsearch-2.4.6<br>hadoop-2.6.4<br>spark-1.6.1 <h2 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h2>现在这样的系统由于经常出现问题，es报红，或者计算有问题等，这是由于刚开始一个人做完还没完全稳定就直接撤人了，转了几次到了我手里（因为我懂java，android但是部门基本上是以python为主）。到我手里了是个挑战也是一个机遇嘛，然后就开始了填坑之旅。。。。。。。。。。。。<br>还有一点是这样不能够很好的保持数据的实时性。　<h2 id="改进："><a href="#改进：" class="headerlink" title="改进："></a>改进：</h2>其中遇到也解决了各种问题，就举例最主要的两个。<br>  1.线上的客户投诉获取不到原始日志，没那么多时间弄懂了再改进所以解决是 –》 写python脚本（到了这家公司开始用与部门统一的python）—》功能是从elasticsearch获取到某个域名原始日志然后写入本地文件（虽然不会写，但是这么多年编程scala的大概对日志的处理逻辑还是能看懂的），本地压缩，然后python调用hadoop本地命令行将日志上传到hadoop，先临时解决了问题<br>  2.elasticsearch报红、kafka堆积<br>  不知道怎样解决，只能看日志了，尝试用elasticsearch升级到了5.5.2，发现不会出现这样的问题。  但是又出现了新的问题：spark不能兼容这样的es版本，  给老大反映情况（提了 我倾向的用python脚本计算这一条路和对es降级尝试的路），听命于领导就先对原来的elasticsearch-2.4.6进行了配置改动-但是发现还是偶尔会出现es报红的情况。    只能用另一条路用python脚本代替spark，使用es自身的聚合功能进行计算，这样就解决了问题。<br>  总结：所以最后的解决办法是 去掉spark        先用python脚本直接聚合统计方式请求es获取结果,这样也满足线上要求，就先这样了。<h1 id="结果："><a href="#结果：" class="headerlink" title="结果："></a>结果：</h1></li>
+<li>logstash-forward (边缘节点日志收集，上传到有logstash的机器)       -》</li>
+<li>kafka  强大的数据缓存组建          （由logstash收集日志到kafka）    -》</li>
+<li>elasticsearch (分布式、可扩展、实时的搜索与数据分析引擎)  (用logstash从kafka取出数据存到es)  -&gt;</li>
+<li>python脚本（调用elasticsearch的resultful_api获取统计结果，同时打包原始日志到本地上传到hadoop）    -》</li>
+<li>elasticsearch （进行计算结果数据存储），hadoop（原始日志打包存储） -》</li>
+<li>nginx  + django服务  进行反向代理、负载均衡、地址隐藏            django进行界面展示-》</li>
+<li>客户直接访问观看<h2 id="版本-1"><a href="#版本-1" class="headerlink" title="版本"></a>版本</h2>zookeeper 3.4.7<br>kafka_2.11-0.8.2.1<br>logstash-2.2.2<br>elasticsearch-5.5.2<br>hadoop-2.6.4<br>python以及python elasticsearch库 <h2 id="现在的架构："><a href="#现在的架构：" class="headerlink" title="现在的架构："></a>现在的架构：</h2>公司在我刚开始接手的同时已经公司招聘了一个大数据人员（但不是本部门的），本部门也要有新项目有更大的数据量要计算需要跟他对接，但是等了好几个月仍然没有啥成果，老大忍不住了让我去看看他的大数据代码、提改进建议催进度（他主要用spark最终结果存到hbase，java写的代码），然后发现代码写的比较烂（因为java基本的静态变量 方法封装 继承多态等一看就是新手），业务逻辑也有点问题-跟老大反映，但是不同部门管不着也不能说啊，细节不说了，最终又开始了新架构的尝试之旅。</li>
+<li>1.filbeat 边缘节点日志收集，上传到有logstash的机器（或者可以用flume)    -》</li>
+<li><p>2.kafka  强大的数据缓存组件         （由logstash收集日志到kafka）    -》</p>
+</li>
+<li><p>3.spark（大规模数据计算引擎，从kafka取出日志，通过scala编写的spark代码把计算结果存入es）    -》</p>
+</li>
+<li>4.elasticsearch （进行计算结果数据存储） -》 </li>
+<li><p>5.nginx + django   界面展示或接口让客户获取服务</p>
+<p>同时并行的原始日志打包   （刚开始日志打包考虑到了用spark或者flume直接上传到hadoop，但是后来发现现有机器这样的速度赶不上实际需要，）</p>
+</li>
+<li>3.flume(自定义sink插件，filter插件 从kafka的另一个topic中获取日志数据，把日志按域名，按小时打包到本地）     -》</li>
+<li>4.python 调用hadoop命令行上传本地打包好的日志到hadoop -&gt;</li>
+<li>5.nginx + django   界面展示或接口让客户获取服务</li>
+</ul>
+<h2 id="版本信息"><a href="#版本信息" class="headerlink" title="版本信息"></a>版本信息</h2><p>apache-flume-1.6.0-bin  hadoop-2.6.4   kafka_2.11-1.0.0  spark-1.6.1-bin-hadoop2.6<br>elasticsearch-5.5.2     hbase         jdk1.8.0_144  logstash-6.1.1    zookeeper-3.4.5<br>jdk1.7.0_45(刚开始hadoop使用 后来spark要求更高就用了1.8版本） </p>
+<h2 id="监控"><a href="#监控" class="headerlink" title="监控"></a>监控</h2><p>当然每个阶段都需要增加监控，这里用的是zabbix监控配合脚本监控</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://alexguo.net/2018/12/18/大数据日志分析系统/" data-id="cjti2wkrh0027ngvwwv1il4tx" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/日志分析/">日志分析</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2018/12/18/大数据日志分析系统-边缘节点日志上传-flume，filbeat-logstash-forward/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          大数据日志分析系统边缘节点日志上传-flume，filbeat,logstash-forward
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/12/18/rocketMQ启动/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">rocketMQ启动</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/android/">android</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/java/">java</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/linux/">linux</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/no-sql/">no sql</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/大数据/">大数据</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/家常/">家常</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/常用工具/">常用工具</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/数据库/">数据库</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/网络/">网络</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/EventBus/">EventBus</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NIO/">NIO</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/bin-log/">bin_log</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/">docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/elasticsearch/">elasticsearch</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/filebeat/">filebeat</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/flume/">flume</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/gitlab/">gitlab</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hbase/">hbase</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hdfs/">hdfs</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/http/">http</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java基础/">java基础</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/jvm/">jvm</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/kafka/">kafka</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux/">linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/logstash/">logstash</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/logstash-forward/">logstash-forward</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mongodb/">mongodb</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/">mysql</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/netty/">netty</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/pcloud/">pcloud</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/rocketMQ/">rocketMQ</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/spark/">spark</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/spring/">spring</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/spring-cloud/">spring cloud</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/spring-cloud-stream/">spring cloud stream</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/spring-rabbitMQ/">spring rabbitMQ</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/其他/">其他</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/数据采集/">数据采集</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/日志分析/">日志分析</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/EventBus/" style="font-size: 10px;">EventBus</a> <a href="/tags/NIO/" style="font-size: 10px;">NIO</a> <a href="/tags/bin-log/" style="font-size: 13.33px;">bin_log</a> <a href="/tags/docker/" style="font-size: 13.33px;">docker</a> <a href="/tags/elasticsearch/" style="font-size: 10px;">elasticsearch</a> <a href="/tags/filebeat/" style="font-size: 10px;">filebeat</a> <a href="/tags/flume/" style="font-size: 10px;">flume</a> <a href="/tags/git/" style="font-size: 10px;">git</a> <a href="/tags/gitlab/" style="font-size: 10px;">gitlab</a> <a href="/tags/hbase/" style="font-size: 10px;">hbase</a> <a href="/tags/hdfs/" style="font-size: 10px;">hdfs</a> <a href="/tags/http/" style="font-size: 10px;">http</a> <a href="/tags/java基础/" style="font-size: 10px;">java基础</a> <a href="/tags/jvm/" style="font-size: 13.33px;">jvm</a> <a href="/tags/kafka/" style="font-size: 10px;">kafka</a> <a href="/tags/linux/" style="font-size: 10px;">linux</a> <a href="/tags/logstash/" style="font-size: 10px;">logstash</a> <a href="/tags/logstash-forward/" style="font-size: 10px;">logstash-forward</a> <a href="/tags/mongodb/" style="font-size: 10px;">mongodb</a> <a href="/tags/mysql/" style="font-size: 16.67px;">mysql</a> <a href="/tags/netty/" style="font-size: 10px;">netty</a> <a href="/tags/pcloud/" style="font-size: 20px;">pcloud</a> <a href="/tags/rocketMQ/" style="font-size: 10px;">rocketMQ</a> <a href="/tags/spark/" style="font-size: 10px;">spark</a> <a href="/tags/spring/" style="font-size: 10px;">spring</a> <a href="/tags/spring-cloud/" style="font-size: 10px;">spring cloud</a> <a href="/tags/spring-cloud-stream/" style="font-size: 10px;">spring cloud stream</a> <a href="/tags/spring-rabbitMQ/" style="font-size: 10px;">spring rabbitMQ</a> <a href="/tags/其他/" style="font-size: 13.33px;">其他</a> <a href="/tags/数据采集/" style="font-size: 10px;">数据采集</a> <a href="/tags/日志分析/" style="font-size: 10px;">日志分析</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">十二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">十一月 2018</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2018/12/28/MySQL的binlog日志/">MySQL的binlog日志</a>
+          </li>
+        
+          <li>
+            <a href="/2018/12/28/大数据之数据采集方法/">大数据之数据采集方法</a>
+          </li>
+        
+          <li>
+            <a href="/2018/12/27/深入理解mongodb和hbase区别/">深入理解mongodb和hbase区别</a>
+          </li>
+        
+          <li>
+            <a href="/2018/12/19/大数据采集方案：mysql-binlog-注意点/">大数据采集方案：mysql-binlog 注意点</a>
+          </li>
+        
+          <li>
+            <a href="/2018/12/19/jvm常见问题知识/">jvm常见问题知识</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2019 Alex Guo<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

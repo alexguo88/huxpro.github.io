@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  
+
+  
+  <title>最终幻想</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="一个程序员的心路。">
+<meta name="keywords" content="java web sql linux">
+<meta property="og:type" content="website">
+<meta property="og:title" content="最终幻想">
+<meta property="og:url" content="https://alexguo.net/page/2/index.html">
+<meta property="og:site_name" content="最终幻想">
+<meta property="og:description" content="一个程序员的心路。">
+<meta property="og:locale" content="zh-CN">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="最终幻想">
+<meta name="twitter:description" content="一个程序员的心路。">
+  
+    <link rel="alternate" href="/atom.xml" title="最终幻想" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.ico">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">最终幻想</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">远离舒适区，忙碌起来！</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="搜索"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://alexguo.net"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main">
+  
+    <article id="post-大数据日志分析系统-elasticsearch" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/12/18/大数据日志分析系统-elasticsearch/" class="article-date">
+  <time datetime="2018-12-18T07:33:46.000Z" itemprop="datePublished">2018-12-18</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/大数据/">大数据</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/12/18/大数据日志分析系统-elasticsearch/">大数据日志分析系统-elasticsearch</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="elasticsearch简介"><a href="#elasticsearch简介" class="headerlink" title="elasticsearch简介"></a>elasticsearch简介</h1><p>Elasticsearch 是一个分布式、可扩展、实时的搜索与数据分析引擎。</p>
+<h1 id="两种架构的es配置差不多"><a href="#两种架构的es配置差不多" class="headerlink" title="两种架构的es配置差不多"></a>两种架构的es配置差不多</h1><h1 id="选用es存储结果数据的理由："><a href="#选用es存储结果数据的理由：" class="headerlink" title="选用es存储结果数据的理由："></a>选用es存储结果数据的理由：</h1><p>1.曾经考虑过hbase选用，也进行过真正的测试，用hbse的问题是这种键值对的数据库，不一定能够保证唯一的键（虽然能把时间戳加入key中），而且es本身只存储结果数据完全符合线上需求，并且es自身带有聚合功能，可以多个条件查询而不只是键值对。</p>
+<h1 id="es原先配置："><a href="#es原先配置：" class="headerlink" title="es原先配置："></a>es原先配置：</h1><p>es总共11个节点  进行了角色分配  其中master节点3个  data节点5个  cient节点3个 (角色分配与 node.master    node.data 有关)<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">ubuntu@sp1:~/elasticsearch-5.5.2/config$ cat elasticsearch.yml | grep -v &apos;#&apos;</span><br><span class="line"></span><br><span class="line"> cluster.name: webluker-logstash</span><br><span class="line"></span><br><span class="line"> cluster.routing.allocation.balance.shard: 0.10 </span><br><span class="line"></span><br><span class="line"> node.name: node-c-sp1</span><br><span class="line"></span><br><span class="line"> node.master: false</span><br><span class="line"></span><br><span class="line"> node.data: false</span><br><span class="line"></span><br><span class="line"> path.data: /mnt/data2,/mnt/data3,/mnt/data4,/mnt/data5,/mnt/data6,/mnt/data7,/mnt/data8,/mnt/data9,/mnt/data10</span><br><span class="line"></span><br><span class="line"> network.host: 0.0.0.0</span><br><span class="line"></span><br><span class="line"> discovery.zen.ping.unicast.hosts: [&quot;master-ip1&quot;,&quot;master-ip2&quot;,&quot;master-ip3&quot;]</span><br><span class="line"></span><br><span class="line"> discovery.zen.minimum_master_nodes: 2</span><br><span class="line"></span><br><span class="line"> discovery.zen.ping_timeout: 100s</span><br><span class="line"></span><br><span class="line"> discovery.zen.fd.ping_timeout: 100s</span><br><span class="line"></span><br><span class="line"> discovery.zen.fd.ping_interval: 30s</span><br><span class="line"></span><br><span class="line"> gateway.expected_nodes: 8</span><br><span class="line"></span><br><span class="line"> gateway.recover_after_nodes: 5</span><br><span class="line"></span><br><span class="line"> thread_pool.bulk.queue_size: 2000</span><br><span class="line"></span><br><span class="line"> thread_pool.search.queue_size: 3000</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">ubuntu@sp34:~/elasticsearch-5.5.2/bin$ cat elasticsearch | grep -v &apos;#&apos;</span><br><span class="line"></span><br><span class="line">JAVA_HOME=&quot;/home/ubuntu/jdk1.8.0_144&quot;</span><br><span class="line"></span><br><span class="line">ES_JAVA_OPTS=&quot;-Xms31g -Xmx31g&quot;</span><br></pre></td></tr></table></figure>
+<p>//==================</p>
+<h1 id="es-spark计算配置"><a href="#es-spark计算配置" class="headerlink" title="es spark计算配置"></a>es spark计算配置</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">ubuntu@sp26:~/apps/elasticsearch-5.5.2/bin$ cat elasticsearch | grep -v &apos;#&apos;</span><br><span class="line"></span><br><span class="line">JAVA_HOME=&quot;/home/ubuntu/apps/jdk1.8.0_144&quot;</span><br><span class="line"></span><br><span class="line">ES_JAVA_OPTS=&quot;-Xms31g -Xmx31g&quot;</span><br><span class="line"></span><br><span class="line">ES_HOME=/home/ubuntu/apps/elasticsearch-5.5.2</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">ubuntu@sp26:~/apps/elasticsearch-5.5.2/config$ cat elasticsearch.yml | grep -v &apos;#&apos;</span><br><span class="line"></span><br><span class="line">cluster.name: log_big_data_wlk</span><br><span class="line"></span><br><span class="line">discovery.zen.ping.unicast.hosts: [&quot;es-master-ip1&quot;,&quot;es-master-ip2&quot;,&quot;es-master-ip3&quot;]</span><br><span class="line"></span><br><span class="line">discovery.zen.minimum_master_nodes: 2</span><br><span class="line"></span><br><span class="line">node.name: node-m-d-sp26</span><br><span class="line"></span><br><span class="line">path.data: /mnt/data2,/mnt/data3,/mnt/data4,/mnt/data5,/mnt/data6,/mnt/data7,/mnt/data8,/mnt/data9,/mnt/data10,/mnt/data11</span><br><span class="line"></span><br><span class="line">network.host: 0.0.0.0</span><br><span class="line"></span><br><span class="line">http.cors.enabled: true</span><br><span class="line"></span><br><span class="line">http.cors.allow-origin: &quot;*&quot;</span><br></pre></td></tr></table></figure>
+<p>//================================</p>
+<h2 id="当然还有es-header插件安装："><a href="#当然还有es-header插件安装：" class="headerlink" title="当然还有es header插件安装："></a>当然还有es header插件安装：</h2><h1 id="kibana安装："><a href="#kibana安装：" class="headerlink" title="kibana安装："></a>kibana安装：</h1><p>//======</p>
+<h1 id="es问题"><a href="#es问题" class="headerlink" title="es问题"></a>es问题</h1><p>1.es索引过多问题    linux定时脚本删除</p>
+<p>2.es索引创建异常，同一时间创建太多 ，那就是前边计算上传有问题了</p>
+<p>3.es的shell监控脚本 （这里是配合zabbix使用发送邮件）</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">#!/usr/bin/env bash</span><br><span class="line">#字符串截取参考 https://www.cnblogs.com/zwgblog/p/6031256.html</span><br><span class="line">#判断字符串包含参考 https://www.cnblogs.com/AndyStudy/p/6064834.html</span><br><span class="line">es_url=&apos;http://sp26:9200&apos;</span><br><span class="line">var=&apos;0&apos;</span><br><span class="line"></span><br><span class="line">#======判断集群健康值是否是green</span><br><span class="line">health_result=`curl -s $es_url/_cluster/health`</span><br><span class="line">#echo ddd$health_result</span><br><span class="line">if [[ $health_result == *&apos;&quot;status&quot;:&quot;green&quot;&apos;* ]]</span><br><span class="line">then</span><br><span class="line">#     echo &quot;包含&quot;</span><br><span class="line">     pass=&apos;yes&apos;</span><br><span class="line">else</span><br><span class="line">     echo &quot;不包含green&quot;</span><br><span class="line">fi</span><br><span class="line">#====获取上个小时的日志数量 参考是否达标</span><br><span class="line">last_hour=`date +%Y.%m.%d.%H  -d  &apos;-1 hours&apos;`</span><br><span class="line">#last_hour=&apos;2017.12.13.13&apos;</span><br><span class="line">last_hour_index=&apos;logstash-&apos;$last_hour</span><br><span class="line">result_query=`curl -s $&#123;es_url&#125;/$&#123;last_hour_index&#125;/_search -d &apos;&#123;&quot;query&quot;:&#123;&quot;bool&quot;:&#123;&quot;must&quot;:[&#123;&quot;match_all&quot;:&#123;&#125;&#125;]&#125;&#125;,&quot;size&quot;:0&#125;&apos;`</span><br><span class="line">#echo $result_query</span><br><span class="line">right_total=$&#123;result_query#*&apos;&quot;hits&quot;:&#123;&quot;total&quot;:&apos;&#125;</span><br><span class="line">hits_total=$&#123;right_total%&apos;,&quot;max_score&quot;&apos;*&#125;</span><br><span class="line">#echo $hits_total</span><br><span class="line">if [ $hits_total  -lt 1000000 ]</span><br><span class="line">then</span><br><span class="line">    echo &apos;数据量&lt;1000000&apos;</span><br><span class="line">fi</span><br><span class="line">echo $var</span><br></pre></td></tr></table></figure>
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://alexguo.net/2018/12/18/大数据日志分析系统-elasticsearch/" data-id="cjti2wkr7001kngvw8m77ze1a" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/elasticsearch/">elasticsearch</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-大数据日志分析系统-logstash" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/12/18/大数据日志分析系统-logstash/" class="article-date">
+  <time datetime="2018-12-18T07:27:45.000Z" itemprop="datePublished">2018-12-18</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/大数据/">大数据</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/12/18/大数据日志分析系统-logstash/">大数据日志分析系统-logstash</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="logstash简介"><a href="#logstash简介" class="headerlink" title="logstash简介"></a>logstash简介</h1><p>Logstash 是一个开源的数据收集引擎，它具有备实时数据传输能力。它可以统一过滤来自不同源的数据，并按照开发者的制定的规范输出到目的地。</p>
+<h1 id="logstash-2-2-2的配置："><a href="#logstash-2-2-2的配置：" class="headerlink" title="logstash-2.2.2的配置："></a>logstash-2.2.2的配置：</h1><h2 id="从logstash-forward-到kafka的配置"><a href="#从logstash-forward-到kafka的配置" class="headerlink" title="从logstash-forward 到kafka的配置"></a>从logstash-forward 到kafka的配置</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">ubuntu@sp1:~/logstashBeforeChangeConf$ cat /home/ubuntu/logstash-2.2.2/config/before-kafka-access.conf</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">input &#123;</span><br><span class="line">      lumberjack &#123;</span><br><span class="line">                    port =&gt; &quot;5044&quot;</span><br><span class="line">                    ssl_certificate =&gt; &quot;/home/ubuntu/logstash-2.2.2/config/lumberjack.crt&quot;</span><br><span class="line">                    ssl_key =&gt;  &quot;/home/ubuntu/logstash-2.2.2/config/lumberjack.key&quot;</span><br><span class="line">                    type =&gt; &quot;fc_access&quot;</span><br><span class="line">                  &#125;</span><br><span class="line">      &#125;</span><br><span class="line"></span><br><span class="line">output &#123;</span><br><span class="line">       if &quot;_grokparsefailure&quot; not in [tags] &#123;</span><br><span class="line">    #       stdout &#123; codec =&gt; rubydebug &#125;</span><br><span class="line">       kafka &#123;</span><br><span class="line">                topic_id =&gt; &quot;kafka_es&quot;</span><br><span class="line">                bootstrap_servers =&gt; &quot;sp1:9092,sp2:9092,sp3:9092,sp4:9092,sp5:9092,sp6:9092,sp7:9092&quot;</span><br><span class="line">                compression_type =&gt; &quot;snappy&quot; </span><br><span class="line">                acks =&gt; [&quot;1&quot;]</span><br><span class="line">                value_serializer =&gt; &quot;org.apache.kafka.common.serialization.StringSerializer&quot;</span><br><span class="line">                timeout_ms =&gt; 10000</span><br><span class="line">                retries =&gt; 5</span><br><span class="line">                retry_backoff_ms =&gt; 100</span><br><span class="line">                send_buffer_bytes =&gt; 102400   </span><br><span class="line">                workers =&gt; 2</span><br><span class="line">             &#125;</span><br><span class="line">      &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="从kafka到es配置"><a href="#从kafka到es配置" class="headerlink" title="从kafka到es配置"></a>从kafka到es配置</h2><p>其中包括了对日志各个字段的解析,以及对异常日志过滤（同时注意其中过滤了 不属于当前时间前后5天的时间的日志，为了防止异常日志创建索引过多导致es报红）<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br></pre></td><td class="code"><pre><span class="line">ubuntu@sp1:~/logstashAfterChangeConf$ cat /home/ubuntu/logstash-2.2.2/config/after-kafa-access.conf</span><br><span class="line"></span><br><span class="line">input &#123;</span><br><span class="line">      kafka &#123;</span><br><span class="line">        topic_id =&gt; &quot;kafka_es&quot;</span><br><span class="line">        group_id =&gt; &quot;kafka_es&quot;</span><br><span class="line">        zk_connect =&gt; &quot;sp1:2181,sp2:2181,sp3:2181,sp4:2181,sp5:2181,sp6:2181,sp7:2181&quot; </span><br><span class="line">        consumer_threads =&gt; 1</span><br><span class="line">        consumer_restart_on_error =&gt; true</span><br><span class="line">        consumer_restart_sleep_ms =&gt; 5000</span><br><span class="line">        decorate_events =&gt; true</span><br><span class="line">        consumer_timeout_ms =&gt; 1000</span><br><span class="line">        queue_size =&gt; 100</span><br><span class="line">        auto_offset_reset =&gt; &quot;smallest&quot;</span><br><span class="line">        rebalance_max_retries =&gt; 50</span><br><span class="line">      &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">filter &#123;</span><br><span class="line">       mutate &#123;</span><br><span class="line">             add_field =&gt; [ &quot;messageClone&quot;, &quot;%&#123;message&#125;&quot; ]</span><br><span class="line">       &#125;</span><br><span class="line"></span><br><span class="line">       mutate &#123;</span><br><span class="line">             split =&gt; &#123; &quot;messageClone&quot; =&gt; &apos;&quot;&apos; &#125;</span><br><span class="line">            add_field =&gt; &#123;&quot;agent&quot; =&gt; &quot;%&#123;[messageClone][3]&#125;&quot;&#125;</span><br><span class="line"></span><br><span class="line">       &#125;</span><br><span class="line">       useragent &#123; </span><br><span class="line">              source =&gt; &quot;agent&quot; </span><br><span class="line">       &#125;</span><br><span class="line"></span><br><span class="line">       mutate &#123;</span><br><span class="line">            split =&gt; &#123; &quot;message&quot; =&gt; &quot; &quot; &#125;</span><br><span class="line">            add_field =&gt; &#123;&quot;timestamp&quot; =&gt; &quot;%&#123;[message][0]&#125;&quot;&#125;</span><br><span class="line">            add_field =&gt; &#123;&quot;reqtime&quot; =&gt; &quot;%&#123;[message][1]&#125;&quot;&#125;</span><br><span class="line">            add_field =&gt; &#123;&quot;clientIP&quot; =&gt; &quot;%&#123;[message][2]&#125;&quot;&#125;</span><br><span class="line">            add_field =&gt; &#123;&quot;squidCache&quot; =&gt; &quot;%&#123;[message][3]&#125;&quot;&#125;</span><br><span class="line">            add_field =&gt; &#123;&quot;repsize&quot; =&gt; &quot;%&#123;[message][4]&#125;&quot;&#125;</span><br><span class="line">            add_field =&gt; &#123;&quot;reqMethod&quot; =&gt; &quot;%&#123;[message][5]&#125;&quot;&#125;</span><br><span class="line">            add_field =&gt; &#123;&quot;requestURL&quot; =&gt; &quot;%&#123;[message][6]&#125;&quot;&#125;</span><br><span class="line">            add_field =&gt; &#123;&quot;username&quot; =&gt; &quot;%&#123;[message][7]&#125;&quot;&#125;</span><br><span class="line">            add_field =&gt; &#123;&quot;requestOriginSite&quot; =&gt; &quot;%&#123;[message][8]&#125;&quot;&#125;</span><br><span class="line">            add_field =&gt; &#123;&quot;mime&quot; =&gt; &quot;%&#123;[message][9]&#125;&quot;&#125;</span><br><span class="line">            add_field =&gt; &#123;&quot;referer&quot; =&gt; &quot;%&#123;[message][10]&#125;&quot;&#125;</span><br><span class="line">            add_field =&gt; &#123;&quot;agentCheck&quot; =&gt; &quot;%&#123;[message][11]&#125;&quot;&#125;</span><br><span class="line">            add_field =&gt; &#123;&quot;dnsGroup&quot; =&gt; &quot;%&#123;[message][-1]&#125;&quot;&#125;</span><br><span class="line">            remove_field =&gt; [&quot;offset&quot;, &quot;kafka&quot;, &quot;@version&quot;, &quot;file&quot;, &quot;message&quot;, &quot;messageClone&quot;]</span><br><span class="line"></span><br><span class="line">       &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">       if [agentCheck] =~ &quot;ChinaCache&quot; &#123;</span><br><span class="line"></span><br><span class="line">         grok &#123; match =&gt; &#123; &quot;agentCheck&quot; =&gt; &quot;OOPS&quot; &#125; &#125;</span><br><span class="line"></span><br><span class="line">       &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">       mutate &#123;</span><br><span class="line"></span><br><span class="line">          convert =&gt; &#123;</span><br><span class="line"></span><br><span class="line">                &quot;timestamp&quot; =&gt; &quot;float&quot;	   </span><br><span class="line"></span><br><span class="line">            &quot;reqtime&quot; =&gt; &quot;integer&quot;</span><br><span class="line"></span><br><span class="line">          &quot;repsize&quot; =&gt; &quot;integer&quot;</span><br><span class="line"></span><br><span class="line">          &#125;</span><br><span class="line"></span><br><span class="line">      remove_field =&gt; [&quot;agentCheck&quot;]</span><br><span class="line"></span><br><span class="line">       &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">       ruby &#123;</span><br><span class="line"></span><br><span class="line">       code =&gt; &quot;event[&apos;timestamp_str&apos;] = Time.at(event[&apos;timestamp&apos;]).strftime(&apos;%Y-%m-%dT%H:%M:%S.%LZ&apos;)&quot;</span><br><span class="line"></span><br><span class="line">       &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">       date &#123; match =&gt; [ &quot;timestamp_str&quot;, &quot;ISO8601&quot; ] </span><br><span class="line"></span><br><span class="line">       &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">       mutate &#123;</span><br><span class="line"></span><br><span class="line">             split =&gt; &#123; &quot;requestURL&quot; =&gt; &apos;/&apos; &#125;</span><br><span class="line"></span><br><span class="line">      add_field =&gt; &#123;&quot;uriHost&quot; =&gt; &quot;%&#123;[requestURL][2]&#125;&quot;&#125;</span><br><span class="line"></span><br><span class="line">      remove_field =&gt; [&quot;timestamp_str&quot;]</span><br><span class="line"></span><br><span class="line">       &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">       mutate &#123;</span><br><span class="line"></span><br><span class="line">             join =&gt; &#123; &quot;requestURL&quot; =&gt; &apos;/&apos; &#125;</span><br><span class="line"></span><br><span class="line">       &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">       ruby &#123;</span><br><span class="line"></span><br><span class="line">              code =&gt; &quot;event.cancel if 5 * 24 * 3600 &lt; (event[&apos;@timestamp&apos;]-::Time.now).abs&quot;</span><br><span class="line"></span><br><span class="line">       &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">output &#123;</span><br><span class="line"></span><br><span class="line">if &quot;ChinaCache&quot; not in [agent] &#123;</span><br><span class="line"></span><br><span class="line">#                   stdout &#123; codec =&gt; &quot;rubydebug&quot; &#125;</span><br><span class="line"></span><br><span class="line">                   elasticsearch &#123;</span><br><span class="line"></span><br><span class="line">                         index =&gt; &quot;logstash-%&#123;+YYYY.MM.dd.HH&#125;&quot;</span><br><span class="line"></span><br><span class="line">                         workers =&gt; 1</span><br><span class="line"></span><br><span class="line">                         flush_size =&gt; 5000</span><br><span class="line"></span><br><span class="line">                         idle_flush_time =&gt; 1</span><br><span class="line"></span><br><span class="line">                         hosts =&gt; [&quot;es-ip-1:9200&quot;,&quot;es-ip-2:9200&quot;,&quot;es-ip-3:9200&quot;,&quot;es-ip-4:9200&quot;,&quot;es-ip-5:9200&quot;,&quot;es-ip-6:9200&quot;,&quot;es-ip-7:9200&quot;]</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">                         &#125;</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h1 id="启动命令："><a href="#启动命令：" class="headerlink" title="启动命令："></a>启动命令：</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nohup /home/ubuntu/logstash-2.2.2/bin/logstash -f /home/ubuntu/logstash-2.2.2/config/after-kafa-access.conf 2&gt;&amp;1 &gt; /home/ubuntu/logstash-2.2.2/logs/logstash-after-kafka-access.log &amp;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nohup /home/ubuntu/logstash-2.2.2/bin/logstash -f /home/ubuntu/logstash-2.2.2/config/before-kafka-access.conf 2&gt;&amp;1 &gt; /home/ubuntu/logstash-2.2.2/logs/logstash-before-kafka.log &amp;</span><br></pre></td></tr></table></figure>
+<h1 id="logstash-6-1-1配置"><a href="#logstash-6-1-1配置" class="headerlink" title="logstash-6.1.1配置"></a>logstash-6.1.1配置</h1><p>##从filbeat到kafka的配置<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line">ubuntu@sp26:~/apps/logstash-6.1.1$ cat filebeat5055-kafkasp26-3.conf</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">input &#123;</span><br><span class="line"></span><br><span class="line">    beats &#123;</span><br><span class="line"></span><br><span class="line">        port =&gt; &quot;5055&quot;</span><br><span class="line"></span><br><span class="line">type =&gt; &quot;log&quot;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">output &#123;</span><br><span class="line"></span><br><span class="line">#   stdout &#123; codec =&gt; rubydebug &#125;</span><br><span class="line"></span><br><span class="line">  kafka &#123;</span><br><span class="line"></span><br><span class="line">    codec =&gt; &quot;json&quot;</span><br><span class="line"></span><br><span class="line">    bootstrap_servers =&gt; &quot;37:9092,38:9092,39:9092,40:9092,41:9092&quot;</span><br><span class="line"></span><br><span class="line">    topic_id =&gt; &quot;test&quot;</span><br><span class="line"></span><br><span class="line">compression_type =&gt; &quot;snappy&quot;</span><br><span class="line"></span><br><span class="line">value_serializer =&gt; &quot;org.apache.kafka.common.serialization.StringSerializer&quot;</span><br><span class="line"></span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>#检测<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/home/ubuntu/apps/logstash-6.1.1/bin/logstash -f /home/ubuntu/apps/logstash-6.1.1/filebeat5055-kafkasp26-3.conf  --config.test_and_exit</span><br></pre></td></tr></table></figure></p>
+<p>#启动<br><code>nohup /home/ubuntu/apps/logstash-6.1.1/bin/logstash -f /home/ubuntu/apps/logstash-6.1.1/filebeat5055-kafkasp26-3.conf --config.reload.automatic   2&gt;&amp;1 &gt;  /home/ubuntu/apps/logstash-6.1.1/logs/filebeat5055-kafkasp26-3.log  &amp;</code>　</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://alexguo.net/2018/12/18/大数据日志分析系统-logstash/" data-id="cjti2wkr9001rngvwsey5opej" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/logstash/">logstash</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-大数据日志分析系统-缓存组件kafka" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/12/18/大数据日志分析系统-缓存组件kafka/" class="article-date">
+  <time datetime="2018-12-18T07:18:28.000Z" itemprop="datePublished">2018-12-18</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/大数据/">大数据</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/12/18/大数据日志分析系统-缓存组件kafka/">大数据日志分析系统-缓存组件kafka</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="kafka简介"><a href="#kafka简介" class="headerlink" title="kafka简介"></a>kafka简介</h1><p>是一种高吞吐量的分布式发布订阅消息系统，当数据量不稳定，数据量大的时候想到它就对了。</p>
+<h1 id="zookeeper简介"><a href="#zookeeper简介" class="headerlink" title="zookeeper简介"></a>zookeeper简介</h1><p>是一个分布式的，开放源码的分布式应用程序协调服务,很多地方用到, 最常见的是为集群提供基础的、高可用HA(High Availability)服务<br>是kafka集群的基础依赖，同时也是hadoop系列中实现HA的基础组件。<br>实现HDFS的NamaNode和YARN的ResourceManager的HA,Spark实现HA，<br>HBase主要用ZooKeeper来实现HMaster选举与主备切换、系统容错、RootRegion管理、Region状态管理和分布式SplitWAL任务管理等。</p>
+<p>//===========================================================</p>
+<p>两种集群的配置相差不大</p>
+<h1 id="zookeeper集群配置："><a href="#zookeeper集群配置：" class="headerlink" title="zookeeper集群配置："></a>zookeeper集群配置：</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">ubuntu@sp1:~/kafka/config$ cat zookeeper.properties | grep -v &apos;#&apos;</span><br><span class="line">dataDir=/mnt/data3/zk</span><br><span class="line">clientPort=2181</span><br><span class="line">tickTime=2000</span><br><span class="line">initLimit=7</span><br><span class="line">syncLimit=4</span><br><span class="line">server.1=sp1:2888:3888</span><br><span class="line">server.2=sp2:2888:3888</span><br><span class="line">server.3=sp3:2888:3888</span><br><span class="line">server.4=sp4:2888:3888</span><br><span class="line">server.5=sp5:2888:3888</span><br><span class="line">server.6=sp6:2888:3888</span><br><span class="line">server.7=sp7:2888:3888</span><br></pre></td></tr></table></figure>
+<h2 id="强制杀死命令"><a href="#强制杀死命令" class="headerlink" title="强制杀死命令"></a>强制杀死命令</h2><p>ps aux |grep kafka |grep -v grep|cut -c 9-15 | xargs kill -9<br>ps aux |grep zookeeper |grep -v grep|cut -c 9-15 | xargs kill -9</p>
+<h1 id="kafka-集群配置："><a href="#kafka-集群配置：" class="headerlink" title="kafka 集群配置："></a>kafka 集群配置：</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">ubuntu@sp1:~/kafka/config$ cat consumer.properties | grep -v &apos;#&apos;</span><br><span class="line">zookeeper.connect=es1:2181,es2:2181,es3:2181,es4:2181,es5:2181</span><br><span class="line">zookeeper.connection.timeout.ms=6000</span><br><span class="line">group.id=test-consumer-group</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">ubuntu@sp1:~/kafka/config$ cat server.properties | grep -v &apos;#&apos;</span><br><span class="line">broker.id=1</span><br><span class="line">port=9092</span><br><span class="line">advertised.host.name=sp1</span><br><span class="line">listeners=PLAINTEXT://sp1-host-ip:9092  </span><br><span class="line">num.network.threads=10</span><br><span class="line">num.io.threads=8</span><br><span class="line">socket.send.buffer.bytes=102400</span><br><span class="line">socket.receive.buffer.bytes=102400</span><br><span class="line">socket.request.max.bytes=104857600</span><br><span class="line">log.dirs=/mnt/data3/kafka-logs</span><br><span class="line">num.partitions=20</span><br><span class="line">num.recovery.threads.per.data.dir=5</span><br><span class="line">log.retention.hours=8</span><br><span class="line">log.retention.bytes=53687091200</span><br><span class="line">log.segment.bytes=1073741824</span><br><span class="line">log.retention.check.interval.ms=300000</span><br><span class="line">log.cleaner.enable=false</span><br><span class="line">zookeeper.connect=sp1:2181,sp2:2181,sp3:2181,sp4:2181,sp5:2181,sp6:2181,sp7:2181</span><br><span class="line">zookeeper.connection.timeout.ms=6000</span><br><span class="line">delete.topic.enable=true</span><br><span class="line">auto.leader.rebalance.enable=true</span><br><span class="line">num.replica.fetchers=5</span><br></pre></td></tr></table></figure>
+<h1 id="启动命令："><a href="#启动命令：" class="headerlink" title="启动命令："></a>启动命令：</h1><h2 id="1-zookeeper启动"><a href="#1-zookeeper启动" class="headerlink" title="1.zookeeper启动"></a>1.zookeeper启动</h2><p>sp1 - sp7在Ubuntu用户下 执行<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/home/ubuntu/zookeeper-3.4.7/bin/zkServer.sh start</span><br></pre></td></tr></table></figure></p>
+<h2 id="jps检查存在"><a href="#jps检查存在" class="headerlink" title="jps检查存在"></a>jps检查存在</h2><p>QuorumPeerMain</p>
+<h2 id="状态查看"><a href="#状态查看" class="headerlink" title="状态查看"></a>状态查看</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/home/ubuntu/zookeeper-3.4.7/bin/zkServer.sh status</span><br></pre></td></tr></table></figure>
+<p>查看为一主动多从启动正常</p>
+<h2 id="文件查看"><a href="#文件查看" class="headerlink" title="文件查看"></a>文件查看</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/home/ubuntu/zookeeper-3.4.7/bin/zkCli.sh -server localhost:2181</span><br></pre></td></tr></table></figure>
+<p>进入客户端 ls / 等命令查看</p>
+<h1 id="2-kafka启动"><a href="#2-kafka启动" class="headerlink" title="2.kafka启动"></a>2.kafka启动</h1><h2 id="sp1到sp7执行"><a href="#sp1到sp7执行" class="headerlink" title="sp1到sp7执行"></a>sp1到sp7执行</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nohup /home/ubuntu/kafka/bin/kafka-server-start.sh /home/ubuntu/kafka/config/server.properties 2&gt;&amp;1 &gt; /home/ubuntu/kafka/logs/kafka.log &amp;</span><br></pre></td></tr></table></figure>
+<p>当然也可以这样远程执行<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh sp1 nohup /home/ubuntu/kafka/bin/kafka-server-start.sh /home/ubuntu/kafka/config/server.properties 2&gt;&amp;1 &gt; /home/ubuntu/kafka/logs/kafka.log &amp;</span><br></pre></td></tr></table></figure></p>
+<h2 id="检查"><a href="#检查" class="headerlink" title="检查"></a>检查</h2><p>~/kafka/bin/kafka-run-class.sh kafka.tools.ConsumerOffsetChecker –broker-info –group kafka_es –topic kafka_es –zookeeper localhost:2181</p>
+<p>就可以看机器是否正常了</p>
+<h1 id="注意："><a href="#注意：" class="headerlink" title="注意："></a>注意：</h1><p>很可能出现kafka个别分片堆积问题：例如现在kafka有35个分片，只有2个分片产生堆积，通过命令<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">~/kafka/bin/kafka-run-class.sh kafka.tools.ConsumerOffsetChecker --broker-info --group kafka_es --topic kafka_es --zookeeper localhost:2181</span><br></pre></td></tr></table></figure></p>
+<p>查看，我遇见过是消费线程小于分片数量（现象是用命令查看是不同的分片Pid 拥有相同的 Owner），这个时候增加消费者进程即可（我个人认为数据量大时消费者要多于分片数量  这样不容易出现挂掉一两个消费者出现分片被堆积的情况）
+　</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://alexguo.net/2018/12/18/大数据日志分析系统-缓存组件kafka/" data-id="cjti2wkre0021ngvw0qat64ij" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/kafka/">kafka</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-大数据日志分析系统-边缘节点日志上传-flume，filbeat-logstash-forward" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/12/18/大数据日志分析系统-边缘节点日志上传-flume，filbeat-logstash-forward/" class="article-date">
+  <time datetime="2018-12-18T07:10:56.000Z" itemprop="datePublished">2018-12-18</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/大数据/">大数据</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/12/18/大数据日志分析系统-边缘节点日志上传-flume，filbeat-logstash-forward/">大数据日志分析系统边缘节点日志上传-flume，filbeat,logstash-forward</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="上传组件简介："><a href="#上传组件简介：" class="headerlink" title="上传组件简介："></a>上传组件简介：</h1><p>它们都是很好的资源上传工具，直接指定目录、文件就可以上传，通用功能不多说，区别除了与本公司产品兼容性好以外：</p>
+<ul>
+<li>filebeat elastic(ELK)官网推荐：占用资源少</li>
+<li>flume    apache官网产品：可定制性强</li>
+<li>logstash-forward  已经过期的产品不多说。</li>
+</ul>
+<p>因为需求简单，只是边缘节点日志上传最终选用了filebeat </p>
+<p> #正确格式原始日志示例：<br> <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">1512231002.276     89 117.169.22.89 TCP_REFRESH_HIT/304 199 GET http://www.baidu.com/download/EF_patch_1.0.3.2-1.0.3.3.exe  - DIRECT/122.228.246.78 - &quot;-&quot; &quot;Mozilla/5.0 Gecko/20100115 Firefox/3.6&quot; &quot;-&quot;</span><br></pre></td></tr></table></figure></p>
+<p> #测试时追加日志的shell<br> <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">echo &apos;1512231002.276     89 117.169.22.89 TCP_REFRESH_HIT/304 199 GET http://www.baidu.com/download/EF_patch_1.0.3.2-1.0.3.3.exe  - DIRECT/122.228.246.78 - &quot;-&quot; &quot;Mozilla/5.0 Gecko/20100115 Firefox/3.6&quot; &quot;-&quot;&apos;  &gt;&gt;  /data/cache1/filbeat_conf/logsdir/test.log</span><br></pre></td></tr></table></figure></p>
+<p> #filbeat配置示例：<br> <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"> [root@filbeathost filbeat_conf]# cat /data/cache1/filbeat_conf/filebeat-file-sp265055.yml</span><br><span class="line">filebeat.prospectors:</span><br><span class="line">- type: log</span><br><span class="line">  paths:</span><br><span class="line">    - /data/cache1/filbeat_conf/logsdir/* </span><br><span class="line">output.logstash:</span><br><span class="line">  hosts: [&quot;logstash-host1:5055&quot;,&quot;logstash-host2:5055&quot;,&quot;logstash-host3:5055&quot;,&quot;logstash-host4:5055&quot;,&quot;logstash-host5:5055&quot;]</span><br></pre></td></tr></table></figure></p>
+<p>#启动<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nohup filebeat -e -c /data/cache1/filbeat_conf/filebeat-file-sp265055.yml  -d &quot;publish&quot; &amp;</span><br></pre></td></tr></table></figure></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://alexguo.net/2018/12/18/大数据日志分析系统-边缘节点日志上传-flume，filbeat-logstash-forward/" data-id="cjti2wkrg0024ngvwv2wnzdym" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/filebeat/">filebeat</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/flume/">flume</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/logstash-forward/">logstash-forward</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-大数据日志分析系统" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/12/18/大数据日志分析系统/" class="article-date">
+  <time datetime="2018-12-18T06:27:39.000Z" itemprop="datePublished">2018-12-18</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/大数据/">大数据</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/12/18/大数据日志分析系统/">大数据日志分析系统</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="原始日志量"><a href="#原始日志量" class="headerlink" title="原始日志量"></a>原始日志量</h1><p>每小时高的是否达到了 45303452条日志（四千五百多万条原始日志） ，某天日志量（这个随便选的）422110779 条（4亿两千多万）</p>
+<h1 id="需求"><a href="#需求" class="headerlink" title="需求"></a>需求</h1><ul>
+<li>1）对原始日志按域名进行分析包括： 请求数分析、独立IP分析、PV分析、地区分布运营商分布分析（根据ip计算）、浏览器操作系统分布分析（根据原始日志的agent进行分析）、热点页面分析、文件类型分析</li>
+<li>2）原始日志按域名、按天、按小时进行打包。</li>
+</ul>
+<h1 id="两种方案"><a href="#两种方案" class="headerlink" title="两种方案"></a>两种方案</h1><p>#　方案１</p>
+<ul>
+<li>→logstash-forward(边缘设备)  </li>
+<li>→ logstash (用logstast-before配置文件) </li>
+<li>→ Kafka (同时依赖zookeeper) </li>
+<li>→ logstash (用logstash-after配置文件) </li>
+<li>→ elaticsearch  </li>
+<li>→ python脚本 </li>
+<li>→ 统计日志本地然后上传到hadoop,各种统计结果到elasticsearch（nginx负载均衡）   </li>
+<li>→  界面展示</li>
+</ul>
+<p>边缘节点服务器会产生很多用户请求日志，要对日志进行各种分析和原始日志打包，最终分析结果进行收费、让客户可以获取请求日志各种分析结果、为客户进行原始日志按域名按天按小时分割打包。</p>
+<h1 id="方案２"><a href="#方案２" class="headerlink" title="方案２"></a>方案２</h1><ul>
+<li>–&gt; filebeat(或flume) </li>
+<li>–&gt; logstash </li>
+<li>–&gt; kafka(kafka依赖zookeeper) </li>
+<li>–&gt; spark统计计算 </li>
+<li>–&gt; 统计各种结果到elasticsearch（nginx负载均衡） </li>
+<li>–&gt; 界面展示</li>
+</ul>
+<p>–&gt; flume(自定义sink插件、验证可行待完成)<br>–&gt; 原始日志本地打包<br>–&gt; 原始日志hadoop上传 (当然这里也可以用hbase进行日志存储)</p>
+<h1 id="大数据实时计算需要的几个基本组件（一定要注意版本问题，java大数据机器间通信用的是RPC-而不是restful-api-如果版本不对应很可能出现版本间的兼容问题）："><a href="#大数据实时计算需要的几个基本组件（一定要注意版本问题，java大数据机器间通信用的是RPC-而不是restful-api-如果版本不对应很可能出现版本间的兼容问题）：" class="headerlink" title="大数据实时计算需要的几个基本组件（一定要注意版本问题，java大数据机器间通信用的是RPC 而不是restful_api,如果版本不对应很可能出现版本间的兼容问题）："></a>大数据实时计算需要的几个基本组件（一定要注意版本问题，java大数据机器间通信用的是RPC 而不是restful_api,如果版本不对应很可能出现版本间的兼容问题）：</h1><ul>
+<li>1.日志收集    -从CDN边缘节点服务器进行日志收集</li>
+<li>2.日志缓存    -收集上来的日志存储到一个缓存设备</li>
+<li>3.数据计算    -对收集的日志进行计算，域名请求数分析、地区统计等等</li>
+<li>4.计算结果存储    -对各种分析结果进行存储，要方便查找</li>
+<li>5.日志打包结果存储<h2 id="公司刚开始的日志系统分布："><a href="#公司刚开始的日志系统分布：" class="headerlink" title="公司刚开始的日志系统分布："></a>公司刚开始的日志系统分布：</h2></li>
+<li>logstash-forward (边缘节点日志收集，上传到有logstash的机器)       -》</li>
+<li>kafka  强大的数据缓存组建          （由logstash收集日志到kafka）    -》</li>
+<li>elasticsearch (分布式、可扩展、实时的搜索与数据分析引擎)  (用logstash从kafka取出数据存到es)  -&gt;</li>
+<li>spark（大规模数据计算引擎，从es取出原始日志然后通过spark计算结果）    -》</li>
+<li>elasticsearch （进行计算结果数据存储），hadoop（原始日志打包存储） -》</li>
+<li>nginx  + django服务  进行反向代理、负载均衡、地址隐藏            django进行界面展示-》</li>
+<li>可客户直接访问观看<h2 id="版本"><a href="#版本" class="headerlink" title="版本"></a>版本</h2>zookeeper 3.4.7<br>kafka_2.11-0.8.2.1<br>logstash-2.2.2<br>elasticsearch-2.4.6<br>hadoop-2.6.4<br>spark-1.6.1 <h2 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h2>现在这样的系统由于经常出现问题，es报红，或者计算有问题等，这是由于刚开始一个人做完还没完全稳定就直接撤人了，转了几次到了我手里（因为我懂java，android但是部门基本上是以python为主）。到我手里了是个挑战也是一个机遇嘛，然后就开始了填坑之旅。。。。。。。。。。。。<br>还有一点是这样不能够很好的保持数据的实时性。　<h2 id="改进："><a href="#改进：" class="headerlink" title="改进："></a>改进：</h2>其中遇到也解决了各种问题，就举例最主要的两个。<br>  1.线上的客户投诉获取不到原始日志，没那么多时间弄懂了再改进所以解决是 –》 写python脚本（到了这家公司开始用与部门统一的python）—》功能是从elasticsearch获取到某个域名原始日志然后写入本地文件（虽然不会写，但是这么多年编程scala的大概对日志的处理逻辑还是能看懂的），本地压缩，然后python调用hadoop本地命令行将日志上传到hadoop，先临时解决了问题<br>  2.elasticsearch报红、kafka堆积<br>  不知道怎样解决，只能看日志了，尝试用elasticsearch升级到了5.5.2，发现不会出现这样的问题。  但是又出现了新的问题：spark不能兼容这样的es版本，  给老大反映情况（提了 我倾向的用python脚本计算这一条路和对es降级尝试的路），听命于领导就先对原来的elasticsearch-2.4.6进行了配置改动-但是发现还是偶尔会出现es报红的情况。    只能用另一条路用python脚本代替spark，使用es自身的聚合功能进行计算，这样就解决了问题。<br>  总结：所以最后的解决办法是 去掉spark        先用python脚本直接聚合统计方式请求es获取结果,这样也满足线上要求，就先这样了。<h1 id="结果："><a href="#结果：" class="headerlink" title="结果："></a>结果：</h1></li>
+<li>logstash-forward (边缘节点日志收集，上传到有logstash的机器)       -》</li>
+<li>kafka  强大的数据缓存组建          （由logstash收集日志到kafka）    -》</li>
+<li>elasticsearch (分布式、可扩展、实时的搜索与数据分析引擎)  (用logstash从kafka取出数据存到es)  -&gt;</li>
+<li>python脚本（调用elasticsearch的resultful_api获取统计结果，同时打包原始日志到本地上传到hadoop）    -》</li>
+<li>elasticsearch （进行计算结果数据存储），hadoop（原始日志打包存储） -》</li>
+<li>nginx  + django服务  进行反向代理、负载均衡、地址隐藏            django进行界面展示-》</li>
+<li>客户直接访问观看<h2 id="版本-1"><a href="#版本-1" class="headerlink" title="版本"></a>版本</h2>zookeeper 3.4.7<br>kafka_2.11-0.8.2.1<br>logstash-2.2.2<br>elasticsearch-5.5.2<br>hadoop-2.6.4<br>python以及python elasticsearch库 <h2 id="现在的架构："><a href="#现在的架构：" class="headerlink" title="现在的架构："></a>现在的架构：</h2>公司在我刚开始接手的同时已经公司招聘了一个大数据人员（但不是本部门的），本部门也要有新项目有更大的数据量要计算需要跟他对接，但是等了好几个月仍然没有啥成果，老大忍不住了让我去看看他的大数据代码、提改进建议催进度（他主要用spark最终结果存到hbase，java写的代码），然后发现代码写的比较烂（因为java基本的静态变量 方法封装 继承多态等一看就是新手），业务逻辑也有点问题-跟老大反映，但是不同部门管不着也不能说啊，细节不说了，最终又开始了新架构的尝试之旅。</li>
+<li>1.filbeat 边缘节点日志收集，上传到有logstash的机器（或者可以用flume)    -》</li>
+<li><p>2.kafka  强大的数据缓存组件         （由logstash收集日志到kafka）    -》</p>
+</li>
+<li><p>3.spark（大规模数据计算引擎，从kafka取出日志，通过scala编写的spark代码把计算结果存入es）    -》</p>
+</li>
+<li>4.elasticsearch （进行计算结果数据存储） -》 </li>
+<li><p>5.nginx + django   界面展示或接口让客户获取服务</p>
+<p>同时并行的原始日志打包   （刚开始日志打包考虑到了用spark或者flume直接上传到hadoop，但是后来发现现有机器这样的速度赶不上实际需要，）</p>
+</li>
+<li>3.flume(自定义sink插件，filter插件 从kafka的另一个topic中获取日志数据，把日志按域名，按小时打包到本地）     -》</li>
+<li>4.python 调用hadoop命令行上传本地打包好的日志到hadoop -&gt;</li>
+<li>5.nginx + django   界面展示或接口让客户获取服务</li>
+</ul>
+<h2 id="版本信息"><a href="#版本信息" class="headerlink" title="版本信息"></a>版本信息</h2><p>apache-flume-1.6.0-bin  hadoop-2.6.4   kafka_2.11-1.0.0  spark-1.6.1-bin-hadoop2.6<br>elasticsearch-5.5.2     hbase         jdk1.8.0_144  logstash-6.1.1    zookeeper-3.4.5<br>jdk1.7.0_45(刚开始hadoop使用 后来spark要求更高就用了1.8版本） </p>
+<h2 id="监控"><a href="#监控" class="headerlink" title="监控"></a>监控</h2><p>当然每个阶段都需要增加监控，这里用的是zabbix监控配合脚本监控</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://alexguo.net/2018/12/18/大数据日志分析系统/" data-id="cjti2wkrh0027ngvwwv1il4tx" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/日志分析/">日志分析</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-rocketMQ启动" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/12/18/rocketMQ启动/" class="article-date">
+  <time datetime="2018-12-18T01:23:57.000Z" itemprop="datePublished">2018-12-18</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/常用工具/">常用工具</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/12/18/rocketMQ启动/">rocketMQ启动</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="下载构建"><a href="#下载构建" class="headerlink" title="下载构建"></a>下载构建</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&gt; unzip rocketmq-all-4.3.2-source-release.zip</span><br><span class="line">&gt; cd rocketmq-all-4.3.2/</span><br><span class="line">&gt; mvn -Prelease-all -DskipTests clean install -U</span><br><span class="line">&gt; cd distribution/target/apache-rocketmq</span><br></pre></td></tr></table></figure>
+<h1 id="Start-Name-Server"><a href="#Start-Name-Server" class="headerlink" title="Start Name Server"></a>Start Name Server</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&gt; nohup sh bin/mqnamesrv &amp; tail -f ~/logs/rocketmqlogs/namesrv.log</span><br><span class="line">The Name Server boot success...</span><br></pre></td></tr></table></figure>
+<h1 id="Start-Broker"><a href="#Start-Broker" class="headerlink" title="Start Broker"></a>Start Broker</h1>  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&gt; nohup sh bin/mqbroker -n localhost:9876 &amp; tail -f ~/logs/rocketmqlogs/broker.log </span><br><span class="line">The broker[%s, 172.30.30.233:10911] boot success...</span><br></pre></td></tr></table></figure>
+<h1 id="Send-amp-Receive-Messages"><a href="#Send-amp-Receive-Messages" class="headerlink" title="Send &amp; Receive Messages"></a>Send &amp; Receive Messages</h1><p>  Before sending/receiving messages, we need to tell clients the location of name servers. RocketMQ provides multiple ways to achieve this. For simplicity, we use environment variable NAMESRV_ADDR<br>  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">  &gt; export NAMESRV_ADDR=localhost:9876</span><br><span class="line">&gt; sh bin/tools.sh org.apache.rocketmq.example.quickstart.Producer</span><br><span class="line">SendResult [sendStatus=SEND_OK, msgId= ...</span><br><span class="line"></span><br><span class="line">&gt; sh bin/tools.sh org.apache.rocketmq.example.quickstart.Consumer</span><br><span class="line">ConsumeMessageThread_%d Receive New Messages: [MessageExt...</span><br></pre></td></tr></table></figure></p>
+<h1 id="Shutdown-Servers"><a href="#Shutdown-Servers" class="headerlink" title="Shutdown Servers"></a>Shutdown Servers</h1> <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"> &gt; sh bin/mqshutdown broker</span><br><span class="line">The mqbroker(36695) is running...</span><br><span class="line">Send shutdown request to mqbroker(36695) OK</span><br><span class="line"></span><br><span class="line">&gt; sh bin/mqshutdown namesrv</span><br><span class="line">The mqnamesrv(36664) is running...</span><br><span class="line">Send shutdown request to mqnamesrv(36664) OK</span><br></pre></td></tr></table></figure>
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://alexguo.net/2018/12/18/rocketMQ启动/" data-id="cjti2wkr00015ngvwq93fvvs5" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/rocketMQ/">rocketMQ</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-跨站请求伪造（CSRF-XSRF）" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/12/17/跨站请求伪造（CSRF-XSRF）/" class="article-date">
+  <time datetime="2018-12-17T01:51:34.000Z" itemprop="datePublished">2018-12-17</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/网络/">网络</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/12/17/跨站请求伪造（CSRF-XSRF）/">跨站请求伪造（CSRF/XSRF）</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>#CSRF</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://alexguo.net/2018/12/17/跨站请求伪造（CSRF-XSRF）/" data-id="cjti2wkrp002lngvwqsgvsatp" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/http/">http</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-linux基础之文件目录权限" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/12/12/linux基础之文件目录权限/" class="article-date">
+  <time datetime="2018-12-12T05:11:19.000Z" itemprop="datePublished">2018-12-12</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/linux/">linux</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/12/12/linux基础之文件目录权限/">linux基础之文件目录权限</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="权限概述"><a href="#权限概述" class="headerlink" title="权限概述"></a>权限概述</h2>
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://alexguo.net/2018/12/12/linux基础之文件目录权限/" data-id="cjti2wkqs000rngvw0903u4r5" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/linux/">linux</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-java基础之NIO" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/12/12/java基础之NIO/" class="article-date">
+  <time datetime="2018-12-12T03:20:52.000Z" itemprop="datePublished">2018-12-12</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/java/">java</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/12/12/java基础之NIO/">java基础之NIO</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="BIO-NIO-AIO-的概念"><a href="#BIO-NIO-AIO-的概念" class="headerlink" title="BIO NIO AIO 的概念"></a>BIO NIO AIO 的概念</h2>
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://alexguo.net/2018/12/12/java基础之NIO/" data-id="cjti2wkqp000nngvw1lxpyoxb" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/NIO/">NIO</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/java基础/">java基础</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-Mysql主从配置，实现读写分离" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/12/10/Mysql主从配置，实现读写分离/" class="article-date">
+  <time datetime="2018-12-10T03:57:28.000Z" itemprop="datePublished">2018-12-10</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/数据库/">数据库</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/12/10/Mysql主从配置，实现读写分离/">Mysql主从配置，实现读写分离</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>大型网站为了软解大量的并发访问，除了在网站实现分布式负载均衡，远远不够。到了数据业务层、数据访问层，如果还是传统的数据结构，或者只是单单靠一台服务器扛，如此多的数据库连接操作，数据库必然会崩溃，数据丢失的话，后果更是 不堪设想。这时候，我们会考虑如何减少数据库的联接，一方面采用优秀的代码框架，进行代码的优化，采用优秀的数据缓存技术如：memcached,如果资金丰厚的话，必然会想到假设服务器群，来分担主数据库的压力。</p>
+<p>Ok切入今天微博主题，利用MySQL主从配置，实现读写分离，减轻数据库压力。这种方式，在如今很多网站里都有使用，也不是什么新鲜事情，今天总结一下，方便大家学习参考一下。</p>
+<p><strong>概述</strong>：搭设一台Master服务器（win8.1系统，Ip：192.168.0.104），搭设两台Slave服务器（虚拟机——一台Ubuntu，一台 Windows Server 2003）</p>
+<p><strong>原理</strong>：主服务器（Master）负责网站NonQuery操作，从服务器负责Query操作，用户可以根据网站功能模特性块固定访问Slave服务器，或者自己写个池或队列，自由为请求分配从服务器连接。主从服务器利用MySQL的二进制日志文件，实现数据同步。二进制日志由主服务器产生，从服务器响应获取同步数据库。</p>
+<h2 id="具体实现："><a href="#具体实现：" class="headerlink" title="具体实现："></a>具体实现：</h2><p><strong>1、在主从服务器上都装上MySQL数据库</strong> </p>
+<p>windows系统鄙人安装的是mysql_5.5.25.msi版本，<br>Ubuntu安装的是mysql-5.6.22-linux-glibc2.5-i686.tar</p>
+<p>windows安装mysql就不谈了，一般地球人都应该会。鄙人稍微说一下Ubuntu的MySQL安装，我建议不要在线下载安装，还是离线安装的好。大家可以参考  <a href="http://www.linuxidc.com/Linux/2013-01/78716.htm" target="_blank" rel="noopener">http://www.linuxidc.com/Linux/2013-01/78716.htm</a> 这位不知道大哥还是姐妹，写的挺好按照这个就能装上。在安装的时候可能会出现几种现象，大家可以参考解决一下：</p>
+<p>（1）如果您不是使用root用户登录，建议 su - root 切换到Root用户安装，那就不用老是 sudo 了。</p>
+<p>（2）存放解压的mysql 文件夹，文件夹名字最好改成mysql</p>
+<p>（3）在./support-files/mysql.server start 启动MySQL的时候，可能会出现一个警告，中文意思是启动服务运行读文件时，忽略了my.cnf文件，那是因为my.cnf的文件权限有问题，mysql会认为该文件有危险不会执行。但是mysql还会启动成功，但如果下面配置从服务器参数修改my.cnf文件的时候，你会发现文件改过了，但是重启服务时，修改过后的配置没有执行，而且您 list一下mysql的文件夹下会发现很多.my.cnf.swp等中间文件。这都是因为MySQL启动时没有读取my.cnf的原因。这时只要将my.cnf的文件权限改成my_new.cnf的权限一样就Ok，命令：chmod 644 my.cnf就Ok</p>
+<p>（4）Ubuntu中修改文档内容没有Vim，最好把Vim 装上，apt-get install vim,不然估计会抓狂。</p>
+<p>这时候我相信MySQL应该安装上去了。</p>
+<p><strong>2、配置Master主服务器</strong> </p>
+<p>（1）在Master MySQL上创建一个用户‘repl’，并允许其他Slave服务器可以通过远程访问Master，通过该用户读取二进制日志，实现数据同步。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">1 mysql&gt;create user repl; //创建新用户</span><br><span class="line">2 //repl用户必须具有REPLICATION SLAVE权限，除此之外没有必要添加不必要的权限，密码为mysql。说明一下192.168.0.%，这个配置是指明repl用户所在服务器，这里%是通配符，表示192.168.0.0-192.168.0.255的Server都可以以repl用户登陆主服务器。当然你也可以指定固定Ip。</span><br><span class="line">3 mysql&gt; GRANT REPLICATION SLAVE ON *.* TO &apos;repl&apos;@&apos;192.168.0.%&apos; IDENTIFIED BY &apos;mysql&apos;;</span><br></pre></td></tr></table></figure>
+<p>（2）找到MySQL安装文件夹修改my.Ini文件。mysql中有好几种日志方式，这不是今天的重点。我们只要启动二进制日志log-bin就ok。</p>
+<p> 在[mysqld]下面增加下面几行代码<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">server-id=1   //给数据库服务的唯一标识，一般为大家设置服务器Ip的末尾号</span><br><span class="line">log-bin=master-bin</span><br><span class="line">log-bin-index=master-bin.index</span><br></pre></td></tr></table></figure></p>
+<p>（3）查看日志<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; SHOW MASTER STATUS;</span><br><span class="line">+-------------------+----------+--------------+------------------+</span><br><span class="line">| File | Position | Binlog_Do_DB | Binlog_Ignore_DB |</span><br><span class="line">+-------------------+----------+--------------+------------------+</span><br><span class="line">| master-bin.000001 | 1285 | | |</span><br><span class="line">+-------------------+----------+--------------+------------------+</span><br><span class="line">1 row in set (0.00 sec)</span><br><span class="line"></span><br><span class="line">重启MySQL服务</span><br></pre></td></tr></table></figure></p>
+<p><strong>3、 配置Slave从服务器（windows）</strong></p>
+<p>（1）找到MySQL安装文件夹修改my.ini文件，在[mysqld]下面增加下面几行代码<br> my.cnf 配置<br> <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[mysqld]</span><br><span class="line">server-id=2</span><br><span class="line">relay-log-index=slave-relay-bin.index</span><br><span class="line">relay-log=slave-relay-bin</span><br></pre></td></tr></table></figure></p>
+<p>重启MySQL服务</p>
+<p>（2）连接Master<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">change master to master_host=&apos;192.168.0.104&apos;, //Master 服务器Ip</span><br><span class="line">master_port=3306,</span><br><span class="line">master_user=&apos;repl&apos;,</span><br><span class="line">master_password=&apos;mysql&apos;, </span><br><span class="line">master_log_file=&apos;master-bin.000001&apos;,//Master服务器产生的日志</span><br><span class="line">master_log_pos=0;</span><br></pre></td></tr></table></figure></p>
+<p>（3）启动Slave<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">start slave;</span><br></pre></td></tr></table></figure></p>
+<p><strong>4、 Slave从服务器（Ubuntu）</strong></p>
+<p>（1）找到MySQL安装文件夹修改my.cnf文件,vim my.cnf</p>
+<p> <img src="http://alexoss1.oss-cn-beijing.aliyuncs.com/test/141118216966295.png" alt="图片"></p>
+<p>（2） 重启<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">./support-files/myql.server restart 重启MySQL服务  ,  </span><br><span class="line">./bin/mysql 进入MySQL命令窗口</span><br></pre></td></tr></table></figure></p>
+<p>（3）连接Master<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">change master to master_host=&apos;192.168.0.104&apos;, //Master 服务器Ip</span><br><span class="line">master_port=3306,</span><br><span class="line">master_user=&apos;repl&apos;,</span><br><span class="line">master_password=&apos;mysql&apos;, </span><br><span class="line">master_log_file=&apos;master-bin.000001&apos;,//Master服务器产生的日志</span><br><span class="line">master_log_pos=0;</span><br></pre></td></tr></table></figure></p>
+<p>（4）启动Slave<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">start slave;</span><br></pre></td></tr></table></figure></p>
+<p>OK所有配置都完成了，这时候大家可以在Master Mysql 中进行测试了，因为我们监视的时Master mysql  所有操作日志，所以，你的任何改变主服务器数据库的操作，都会同步到从服务器上。创建个数据库，表试试吧。。。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://alexguo.net/2018/12/10/Mysql主从配置，实现读写分离/" data-id="cjti2wkqf000angvwzhp09cxb" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mysql/">mysql</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+
+
+  <nav id="page-nav">
+    
+    <a class="extend prev" rel="prev" href="/">&laquo; 上一页</a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><a class="extend next" rel="next" href="/page/3/">下一页 &raquo;</a>
+  </nav>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/android/">android</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/java/">java</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/linux/">linux</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/no-sql/">no sql</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/大数据/">大数据</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/家常/">家常</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/常用工具/">常用工具</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/数据库/">数据库</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/网络/">网络</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/EventBus/">EventBus</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NIO/">NIO</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/bin-log/">bin_log</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/">docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/elasticsearch/">elasticsearch</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/filebeat/">filebeat</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/flume/">flume</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/gitlab/">gitlab</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hbase/">hbase</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hdfs/">hdfs</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/http/">http</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java基础/">java基础</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/jvm/">jvm</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/kafka/">kafka</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux/">linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/logstash/">logstash</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/logstash-forward/">logstash-forward</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mongodb/">mongodb</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/">mysql</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/netty/">netty</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/pcloud/">pcloud</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/rocketMQ/">rocketMQ</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/spark/">spark</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/spring/">spring</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/spring-cloud/">spring cloud</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/spring-cloud-stream/">spring cloud stream</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/spring-rabbitMQ/">spring rabbitMQ</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/其他/">其他</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/数据采集/">数据采集</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/日志分析/">日志分析</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/EventBus/" style="font-size: 10px;">EventBus</a> <a href="/tags/NIO/" style="font-size: 10px;">NIO</a> <a href="/tags/bin-log/" style="font-size: 13.33px;">bin_log</a> <a href="/tags/docker/" style="font-size: 13.33px;">docker</a> <a href="/tags/elasticsearch/" style="font-size: 10px;">elasticsearch</a> <a href="/tags/filebeat/" style="font-size: 10px;">filebeat</a> <a href="/tags/flume/" style="font-size: 10px;">flume</a> <a href="/tags/git/" style="font-size: 10px;">git</a> <a href="/tags/gitlab/" style="font-size: 10px;">gitlab</a> <a href="/tags/hbase/" style="font-size: 10px;">hbase</a> <a href="/tags/hdfs/" style="font-size: 10px;">hdfs</a> <a href="/tags/http/" style="font-size: 10px;">http</a> <a href="/tags/java基础/" style="font-size: 10px;">java基础</a> <a href="/tags/jvm/" style="font-size: 13.33px;">jvm</a> <a href="/tags/kafka/" style="font-size: 10px;">kafka</a> <a href="/tags/linux/" style="font-size: 10px;">linux</a> <a href="/tags/logstash/" style="font-size: 10px;">logstash</a> <a href="/tags/logstash-forward/" style="font-size: 10px;">logstash-forward</a> <a href="/tags/mongodb/" style="font-size: 10px;">mongodb</a> <a href="/tags/mysql/" style="font-size: 16.67px;">mysql</a> <a href="/tags/netty/" style="font-size: 10px;">netty</a> <a href="/tags/pcloud/" style="font-size: 20px;">pcloud</a> <a href="/tags/rocketMQ/" style="font-size: 10px;">rocketMQ</a> <a href="/tags/spark/" style="font-size: 10px;">spark</a> <a href="/tags/spring/" style="font-size: 10px;">spring</a> <a href="/tags/spring-cloud/" style="font-size: 10px;">spring cloud</a> <a href="/tags/spring-cloud-stream/" style="font-size: 10px;">spring cloud stream</a> <a href="/tags/spring-rabbitMQ/" style="font-size: 10px;">spring rabbitMQ</a> <a href="/tags/其他/" style="font-size: 13.33px;">其他</a> <a href="/tags/数据采集/" style="font-size: 10px;">数据采集</a> <a href="/tags/日志分析/" style="font-size: 10px;">日志分析</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">十二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">十一月 2018</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2018/12/28/MySQL的binlog日志/">MySQL的binlog日志</a>
+          </li>
+        
+          <li>
+            <a href="/2018/12/28/大数据之数据采集方法/">大数据之数据采集方法</a>
+          </li>
+        
+          <li>
+            <a href="/2018/12/27/深入理解mongodb和hbase区别/">深入理解mongodb和hbase区别</a>
+          </li>
+        
+          <li>
+            <a href="/2018/12/19/大数据采集方案：mysql-binlog-注意点/">大数据采集方案：mysql-binlog 注意点</a>
+          </li>
+        
+          <li>
+            <a href="/2018/12/19/jvm常见问题知识/">jvm常见问题知识</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2019 Alex Guo<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>
