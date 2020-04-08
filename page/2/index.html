@@ -70,6 +70,68 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-大数据日志分析系统-spark进行日志计算" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/12/18/大数据日志分析系统-spark进行日志计算/" class="article-date">
+  <time datetime="2018-12-18T07:39:49.000Z" itemprop="datePublished">2018-12-18</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/大数据/">大数据</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/12/18/大数据日志分析系统-spark进行日志计算/">大数据日志分析系统-spark进行日志计算</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>#spark简介：<br>Apache Spark 是专为大规模数据处理而设计的快速通用的计算引擎。</p>
+<p>#需要满足的项目需求：<br>用spark进行实时统计，从kafka中获取数据，流式计算每分钟一次将计算结果存入es，供客户进行查询。</p>
+<p>#这里不用直接存入es的方式进行聚合或者存入es之后再进行计算的原因：</p>
+<ul>
+<li><p>1.直接存入es进行聚合的话es中会随着时间的推移保存大量的原始日志，es存入数据量太大的数据会产生性能问题,而且大量用户同时查询也会产生聚合过多的性能问题。</p>
+</li>
+<li><p>2.先将原始日志存入es，计算结果数据后再次删除原始日志   会产生问题： </p>
+<ul>
+<li><p>1）虽然现有数据量es能够满足要求，但是当数据量再次大增时会产生kafka堆积 - es速度跟不上，而spark的处理速度可以跟得上  </p>
+</li>
+<li><p>2）实时性在逻辑上和技术上得不到很好的保证。例如每次计算当前时间前5分钟的日志（线上python脚本运行时计算当前时间前1小时日志），一旦数据量过大产生kafka堆积，日志不能实时收集到es就会产生计算数据少的问题。</p>
+</li>
+</ul>
+</li>
+</ul>
+<p>#做的过程中遇到的问题：<br>遇到过内存问题，算是由于缓存处理不当引起的 后来改用了LruCache      现象是不断的进行消费没有产生kafka堆积，但是没有结果数据，运行正常</p>
+<p>#spark配置：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">ubuntu@sp26:~/apps/spark-1.6.1-bin-hadoop2.6/conf$ cat spark-env.sh | grep -v &apos;#&apos;</span><br><span class="line">export JAVA_HOME=/home/ubuntu/apps/jdk1.8.0_144</span><br><span class="line"></span><br><span class="line">export SPARK_MASTER_IP=sp26</span><br><span class="line"></span><br><span class="line">export SPARK_MASTER_PORT=7077</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">ubuntu@sp26:~/apps/spark-1.6.1-bin-hadoop2.6/conf$ cat slaves</span><br><span class="line"></span><br><span class="line">sp27</span><br><span class="line"></span><br><span class="line">sp28</span><br><span class="line"></span><br><span class="line">sp29</span><br><span class="line"></span><br><span class="line">sp30</span><br></pre></td></tr></table></figure>
+<p>#当然要有 ssh免密配置，linux环境变量配置等等，以后的文章会进行补充<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">启动ubuntu@sp26:~/apps/spark-1.6.1-bin-hadoop2.6$ sbin/start-all.sh</span><br><span class="line"></span><br><span class="line">http://sp26:8080</span><br><span class="line"></span><br><span class="line">这先是单节点</span><br></pre></td></tr></table></figure></p>
+<p>#spark代码：<br>git地址：<a href="https://github.com/penghaoyou5/SparkLogAnalysis.git" target="_blank" rel="noopener">https://github.com/penghaoyou5/SparkLogAnalysis.git</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://alexguo.net/2018/12/18/大数据日志分析系统-spark进行日志计算/" data-id="ck8qxvla20023joy7t0g3wu19" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/spark/">spark</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-大数据日志分析系统-elasticsearch" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2018/12/18/大数据日志分析系统-elasticsearch/" class="article-date">
@@ -112,7 +174,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://alexguo.net/2018/12/18/大数据日志分析系统-elasticsearch/" data-id="cjti2wkr7001kngvw8m77ze1a" class="article-share-link">Share</a>
+      <a data-url="https://alexguo.net/2018/12/18/大数据日志分析系统-elasticsearch/" data-id="ck8qxvl9t001kjoy7i3606m2r" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/elasticsearch/">elasticsearch</a></li></ul>
@@ -162,7 +224,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://alexguo.net/2018/12/18/大数据日志分析系统-logstash/" data-id="cjti2wkr9001rngvwsey5opej" class="article-share-link">Share</a>
+      <a data-url="https://alexguo.net/2018/12/18/大数据日志分析系统-logstash/" data-id="ck8qxvla0001yjoy7odadvxdp" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/logstash/">logstash</a></li></ul>
@@ -225,7 +287,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://alexguo.net/2018/12/18/大数据日志分析系统-缓存组件kafka/" data-id="cjti2wkre0021ngvw0qat64ij" class="article-share-link">Share</a>
+      <a data-url="https://alexguo.net/2018/12/18/大数据日志分析系统-缓存组件kafka/" data-id="ck8qxvla10021joy7ix68kqrs" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/kafka/">kafka</a></li></ul>
@@ -278,7 +340,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://alexguo.net/2018/12/18/大数据日志分析系统-边缘节点日志上传-flume，filbeat-logstash-forward/" data-id="cjti2wkrg0024ngvwv2wnzdym" class="article-share-link">Share</a>
+      <a data-url="https://alexguo.net/2018/12/18/大数据日志分析系统-边缘节点日志上传-flume，filbeat-logstash-forward/" data-id="ck8qxvla40026joy7xn9yjzkc" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/filebeat/">filebeat</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/flume/">flume</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/logstash-forward/">logstash-forward</a></li></ul>
@@ -381,7 +443,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://alexguo.net/2018/12/18/大数据日志分析系统/" data-id="cjti2wkrh0027ngvwwv1il4tx" class="article-share-link">Share</a>
+      <a data-url="https://alexguo.net/2018/12/18/大数据日志分析系统/" data-id="ck8qxvla7002bjoy778hus1qr" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/日志分析/">日志分析</a></li></ul>
@@ -427,7 +489,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://alexguo.net/2018/12/18/rocketMQ启动/" data-id="cjti2wkr00015ngvwq93fvvs5" class="article-share-link">Share</a>
+      <a data-url="https://alexguo.net/2018/12/18/rocketMQ启动/" data-id="ck8qxvl9u001njoy74fhah2pv" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/rocketMQ/">rocketMQ</a></li></ul>
@@ -470,7 +532,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://alexguo.net/2018/12/17/跨站请求伪造（CSRF-XSRF）/" data-id="cjti2wkrp002lngvwqsgvsatp" class="article-share-link">Share</a>
+      <a data-url="https://alexguo.net/2018/12/17/跨站请求伪造（CSRF-XSRF）/" data-id="ck8qxvlab002ljoy7n5fb1o7f" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/http/">http</a></li></ul>
@@ -512,7 +574,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://alexguo.net/2018/12/12/linux基础之文件目录权限/" data-id="cjti2wkqs000rngvw0903u4r5" class="article-share-link">Share</a>
+      <a data-url="https://alexguo.net/2018/12/12/linux基础之文件目录权限/" data-id="ck8qxvl9h000tjoy7izzfo5ja" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/linux/">linux</a></li></ul>
@@ -554,82 +616,10 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://alexguo.net/2018/12/12/java基础之NIO/" data-id="cjti2wkqp000nngvw1lxpyoxb" class="article-share-link">Share</a>
+      <a data-url="https://alexguo.net/2018/12/12/java基础之NIO/" data-id="ck8qxvl9f000rjoy7y54irq7o" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/NIO/">NIO</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/java基础/">java基础</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-Mysql主从配置，实现读写分离" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2018/12/10/Mysql主从配置，实现读写分离/" class="article-date">
-  <time datetime="2018-12-10T03:57:28.000Z" itemprop="datePublished">2018-12-10</time>
-</a>
-    
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/数据库/">数据库</a>
-  </div>
-
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/12/10/Mysql主从配置，实现读写分离/">Mysql主从配置，实现读写分离</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>大型网站为了软解大量的并发访问，除了在网站实现分布式负载均衡，远远不够。到了数据业务层、数据访问层，如果还是传统的数据结构，或者只是单单靠一台服务器扛，如此多的数据库连接操作，数据库必然会崩溃，数据丢失的话，后果更是 不堪设想。这时候，我们会考虑如何减少数据库的联接，一方面采用优秀的代码框架，进行代码的优化，采用优秀的数据缓存技术如：memcached,如果资金丰厚的话，必然会想到假设服务器群，来分担主数据库的压力。</p>
-<p>Ok切入今天微博主题，利用MySQL主从配置，实现读写分离，减轻数据库压力。这种方式，在如今很多网站里都有使用，也不是什么新鲜事情，今天总结一下，方便大家学习参考一下。</p>
-<p><strong>概述</strong>：搭设一台Master服务器（win8.1系统，Ip：192.168.0.104），搭设两台Slave服务器（虚拟机——一台Ubuntu，一台 Windows Server 2003）</p>
-<p><strong>原理</strong>：主服务器（Master）负责网站NonQuery操作，从服务器负责Query操作，用户可以根据网站功能模特性块固定访问Slave服务器，或者自己写个池或队列，自由为请求分配从服务器连接。主从服务器利用MySQL的二进制日志文件，实现数据同步。二进制日志由主服务器产生，从服务器响应获取同步数据库。</p>
-<h2 id="具体实现："><a href="#具体实现：" class="headerlink" title="具体实现："></a>具体实现：</h2><p><strong>1、在主从服务器上都装上MySQL数据库</strong> </p>
-<p>windows系统鄙人安装的是mysql_5.5.25.msi版本，<br>Ubuntu安装的是mysql-5.6.22-linux-glibc2.5-i686.tar</p>
-<p>windows安装mysql就不谈了，一般地球人都应该会。鄙人稍微说一下Ubuntu的MySQL安装，我建议不要在线下载安装，还是离线安装的好。大家可以参考  <a href="http://www.linuxidc.com/Linux/2013-01/78716.htm" target="_blank" rel="noopener">http://www.linuxidc.com/Linux/2013-01/78716.htm</a> 这位不知道大哥还是姐妹，写的挺好按照这个就能装上。在安装的时候可能会出现几种现象，大家可以参考解决一下：</p>
-<p>（1）如果您不是使用root用户登录，建议 su - root 切换到Root用户安装，那就不用老是 sudo 了。</p>
-<p>（2）存放解压的mysql 文件夹，文件夹名字最好改成mysql</p>
-<p>（3）在./support-files/mysql.server start 启动MySQL的时候，可能会出现一个警告，中文意思是启动服务运行读文件时，忽略了my.cnf文件，那是因为my.cnf的文件权限有问题，mysql会认为该文件有危险不会执行。但是mysql还会启动成功，但如果下面配置从服务器参数修改my.cnf文件的时候，你会发现文件改过了，但是重启服务时，修改过后的配置没有执行，而且您 list一下mysql的文件夹下会发现很多.my.cnf.swp等中间文件。这都是因为MySQL启动时没有读取my.cnf的原因。这时只要将my.cnf的文件权限改成my_new.cnf的权限一样就Ok，命令：chmod 644 my.cnf就Ok</p>
-<p>（4）Ubuntu中修改文档内容没有Vim，最好把Vim 装上，apt-get install vim,不然估计会抓狂。</p>
-<p>这时候我相信MySQL应该安装上去了。</p>
-<p><strong>2、配置Master主服务器</strong> </p>
-<p>（1）在Master MySQL上创建一个用户‘repl’，并允许其他Slave服务器可以通过远程访问Master，通过该用户读取二进制日志，实现数据同步。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">1 mysql&gt;create user repl; //创建新用户</span><br><span class="line">2 //repl用户必须具有REPLICATION SLAVE权限，除此之外没有必要添加不必要的权限，密码为mysql。说明一下192.168.0.%，这个配置是指明repl用户所在服务器，这里%是通配符，表示192.168.0.0-192.168.0.255的Server都可以以repl用户登陆主服务器。当然你也可以指定固定Ip。</span><br><span class="line">3 mysql&gt; GRANT REPLICATION SLAVE ON *.* TO &apos;repl&apos;@&apos;192.168.0.%&apos; IDENTIFIED BY &apos;mysql&apos;;</span><br></pre></td></tr></table></figure>
-<p>（2）找到MySQL安装文件夹修改my.Ini文件。mysql中有好几种日志方式，这不是今天的重点。我们只要启动二进制日志log-bin就ok。</p>
-<p> 在[mysqld]下面增加下面几行代码<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">server-id=1   //给数据库服务的唯一标识，一般为大家设置服务器Ip的末尾号</span><br><span class="line">log-bin=master-bin</span><br><span class="line">log-bin-index=master-bin.index</span><br></pre></td></tr></table></figure></p>
-<p>（3）查看日志<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; SHOW MASTER STATUS;</span><br><span class="line">+-------------------+----------+--------------+------------------+</span><br><span class="line">| File | Position | Binlog_Do_DB | Binlog_Ignore_DB |</span><br><span class="line">+-------------------+----------+--------------+------------------+</span><br><span class="line">| master-bin.000001 | 1285 | | |</span><br><span class="line">+-------------------+----------+--------------+------------------+</span><br><span class="line">1 row in set (0.00 sec)</span><br><span class="line"></span><br><span class="line">重启MySQL服务</span><br></pre></td></tr></table></figure></p>
-<p><strong>3、 配置Slave从服务器（windows）</strong></p>
-<p>（1）找到MySQL安装文件夹修改my.ini文件，在[mysqld]下面增加下面几行代码<br> my.cnf 配置<br> <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[mysqld]</span><br><span class="line">server-id=2</span><br><span class="line">relay-log-index=slave-relay-bin.index</span><br><span class="line">relay-log=slave-relay-bin</span><br></pre></td></tr></table></figure></p>
-<p>重启MySQL服务</p>
-<p>（2）连接Master<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">change master to master_host=&apos;192.168.0.104&apos;, //Master 服务器Ip</span><br><span class="line">master_port=3306,</span><br><span class="line">master_user=&apos;repl&apos;,</span><br><span class="line">master_password=&apos;mysql&apos;, </span><br><span class="line">master_log_file=&apos;master-bin.000001&apos;,//Master服务器产生的日志</span><br><span class="line">master_log_pos=0;</span><br></pre></td></tr></table></figure></p>
-<p>（3）启动Slave<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">start slave;</span><br></pre></td></tr></table></figure></p>
-<p><strong>4、 Slave从服务器（Ubuntu）</strong></p>
-<p>（1）找到MySQL安装文件夹修改my.cnf文件,vim my.cnf</p>
-<p> <img src="http://alexoss1.oss-cn-beijing.aliyuncs.com/test/141118216966295.png" alt="图片"></p>
-<p>（2） 重启<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">./support-files/myql.server restart 重启MySQL服务  ,  </span><br><span class="line">./bin/mysql 进入MySQL命令窗口</span><br></pre></td></tr></table></figure></p>
-<p>（3）连接Master<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">change master to master_host=&apos;192.168.0.104&apos;, //Master 服务器Ip</span><br><span class="line">master_port=3306,</span><br><span class="line">master_user=&apos;repl&apos;,</span><br><span class="line">master_password=&apos;mysql&apos;, </span><br><span class="line">master_log_file=&apos;master-bin.000001&apos;,//Master服务器产生的日志</span><br><span class="line">master_log_pos=0;</span><br></pre></td></tr></table></figure></p>
-<p>（4）启动Slave<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">start slave;</span><br></pre></td></tr></table></figure></p>
-<p>OK所有配置都完成了，这时候大家可以在Master Mysql 中进行测试了，因为我们监视的时Master mysql  所有操作日志，所以，你的任何改变主服务器数据库的操作，都会同步到从服务器上。创建个数据库，表试试吧。。。</p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="https://alexguo.net/2018/12/10/Mysql主从配置，实现读写分离/" data-id="cjti2wkqf000angvwzhp09cxb" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mysql/">mysql</a></li></ul>
 
     </footer>
   </div>
@@ -682,7 +672,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">归档</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">十二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">十一月 2018</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/04/">四月 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">十二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">十一月 2018</a></li></ul>
     </div>
   </div>
 
@@ -693,6 +683,10 @@
     <h3 class="widget-title">最新文章</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/2020/04/08/hexo-常用命令/">hexo 常用命令</a>
+          </li>
         
           <li>
             <a href="/2018/12/28/MySQL的binlog日志/">MySQL的binlog日志</a>
@@ -710,10 +704,6 @@
             <a href="/2018/12/19/大数据采集方案：mysql-binlog-注意点/">大数据采集方案：mysql-binlog 注意点</a>
           </li>
         
-          <li>
-            <a href="/2018/12/19/jvm常见问题知识/">jvm常见问题知识</a>
-          </li>
-        
       </ul>
     </div>
   </div>
@@ -726,7 +716,7 @@
   
   <div class="outer">
     <div id="footer-info" class="inner">
-      &copy; 2019 Alex Guo<br>
+      &copy; 2020 Alex Guo<br>
       Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
     </div>
   </div>

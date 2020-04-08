@@ -70,6 +70,51 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-netty入门" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/12/04/netty入门/" class="article-date">
+  <time datetime="2018-12-04T02:59:49.000Z" itemprop="datePublished">2018-12-04</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/java/">java</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/12/04/netty入门/">netty入门</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="服务端"><a href="#服务端" class="headerlink" title="服务端"></a>服务端</h2><ul>
+<li>服务器启动</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ServerTest</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> InterruptedException </span>&#123;</span><br><span class="line"></span><br><span class="line">        <span class="comment">/**</span></span><br><span class="line"><span class="comment">         * bossGroup, 父类的事件循环组只是负责连接，获取到连接后交给 workergroup的子事件循环组。</span></span><br><span class="line"><span class="comment">         * 参数的获取，业务的处理等工作均是由workergroup这个子事件循环组来完成。</span></span><br><span class="line"><span class="comment">         * 一个事件循环组一样可以完成所有的工作，但是Netty推荐的方式是使用两个事件循环组。</span></span><br><span class="line"><span class="comment">         */</span></span><br><span class="line">        EventLoopGroup bossGroup = <span class="keyword">new</span> NioEventLoopGroup();  <span class="comment">//创建父事件循环组</span></span><br><span class="line">        EventLoopGroup workerGroup = <span class="keyword">new</span> NioEventLoopGroup(); <span class="comment">//创建子类的事件循环组</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">try</span>&#123;</span><br><span class="line">            <span class="comment">//创建启动服务器的对象</span></span><br><span class="line">            ServerBootstrap serverBootstrap = <span class="keyword">new</span> ServerBootstrap();</span><br><span class="line"></span><br><span class="line">            <span class="comment">/**</span></span><br><span class="line"><span class="comment">             * group方法接收两个参数， 第一个为父事件循环组，第二个参数为子事件循环组</span></span><br><span class="line"><span class="comment">             */</span></span><br><span class="line">            serverBootstrap.group(bossGroup, workerGroup)</span><br><span class="line">                    .channel(NioServerSocketChannel.class)  <span class="comment">//bossGroup 的通道，只是负责连接</span></span><br><span class="line">                    .childHandler(<span class="keyword">new</span> TestChannelnitializer()); <span class="comment">//设置子事件处理器，workerGroup的处理器，</span></span><br><span class="line"></span><br><span class="line">            ChannelFuture channelFuture = serverBootstrap.bind(<span class="number">8899</span>).sync();  <span class="comment">//绑定端口</span></span><br><span class="line">            channelFuture.channel().closeFuture().sync();</span><br><span class="line"></span><br><span class="line">        &#125;<span class="keyword">finally</span>&#123;</span><br><span class="line">            bossGroup.shutdownGracefully();</span><br><span class="line">            workerGroup.shutdownGracefully();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://alexguo.net/2018/12/04/netty入门/" data-id="ck8qxvl9i000wjoy7wj8dkqo9" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/netty/">netty</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-EventBus的使用" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2018/11/27/EventBus的使用/" class="article-date">
@@ -109,7 +154,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://alexguo.net/2018/11/27/EventBus的使用/" data-id="cjti2wkpy0000ngvwash15g0v" class="article-share-link">Share</a>
+      <a data-url="https://alexguo.net/2018/11/27/EventBus的使用/" data-id="ck8qxvl8n0000joy7r5uosk9m" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/EventBus/">EventBus</a></li></ul>
@@ -152,7 +197,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://alexguo.net/2018/11/27/spring5-新特性学习/" data-id="cjti2wkr3001dngvw8b4q5dz1" class="article-share-link">Share</a>
+      <a data-url="https://alexguo.net/2018/11/27/spring5-新特性学习/" data-id="ck8qxvl9o0019joy7ewojc0w2" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/spring/">spring</a></li></ul>
@@ -195,7 +240,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://alexguo.net/2018/11/27/gitlab-的使用/" data-id="cjti2wkqn000lngvw0ebyjnab" class="article-share-link">Share</a>
+      <a data-url="https://alexguo.net/2018/11/27/gitlab-的使用/" data-id="ck8qxvl9d000njoy7ps5aht3p" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/git/">git</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/gitlab/">gitlab</a></li></ul>
@@ -237,7 +282,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://alexguo.net/2018/11/27/自我介绍/" data-id="cjti2wkrn002hngvwy1saao5r" class="article-share-link">Share</a>
+      <a data-url="https://alexguo.net/2018/11/27/自我介绍/" data-id="ck8qxvla9002ijoy7q5xhf3ja" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/其他/">其他</a></li></ul>
@@ -293,7 +338,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">归档</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">十二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">十一月 2018</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/04/">四月 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">十二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">十一月 2018</a></li></ul>
     </div>
   </div>
 
@@ -304,6 +349,10 @@
     <h3 class="widget-title">最新文章</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/2020/04/08/hexo-常用命令/">hexo 常用命令</a>
+          </li>
         
           <li>
             <a href="/2018/12/28/MySQL的binlog日志/">MySQL的binlog日志</a>
@@ -321,10 +370,6 @@
             <a href="/2018/12/19/大数据采集方案：mysql-binlog-注意点/">大数据采集方案：mysql-binlog 注意点</a>
           </li>
         
-          <li>
-            <a href="/2018/12/19/jvm常见问题知识/">jvm常见问题知识</a>
-          </li>
-        
       </ul>
     </div>
   </div>
@@ -337,7 +382,7 @@
   
   <div class="outer">
     <div id="footer-info" class="inner">
-      &copy; 2019 Alex Guo<br>
+      &copy; 2020 Alex Guo<br>
       Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
     </div>
   </div>

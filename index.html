@@ -70,6 +70,139 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-hexo-常用命令" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2020/04/08/hexo-常用命令/" class="article-date">
+  <time datetime="2020-04-08T05:51:49.000Z" itemprop="datePublished">2020-04-08</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/04/08/hexo-常用命令/">hexo 常用命令</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="hexo"><a href="#hexo" class="headerlink" title="hexo"></a>hexo</h1><figure class="highlight shell"><figcaption><span>script</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">npm install hexo -g #安装  </span><br><span class="line">npm update hexo -g #升级  </span><br><span class="line">hexo init #初始化</span><br></pre></td></tr></table></figure>
+<h2 id="简写"><a href="#简写" class="headerlink" title="简写"></a>简写</h2><figure class="highlight shell"><figcaption><span>script</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">hexo n "我的博客" == hexo new "我的博客" #新建文章</span><br><span class="line">hexo p == hexo publish</span><br><span class="line">hexo g == hexo generate#生成</span><br><span class="line">hexo s == hexo server #启动服务预览</span><br><span class="line">hexo d == hexo deploy#部署</span><br></pre></td></tr></table></figure>
+<h2 id="服务器"><a href="#服务器" class="headerlink" title="服务器"></a>服务器</h2><figure class="highlight shell"><figcaption><span>script</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">hexo server #Hexo 会监视文件变动并自动更新，您无须重启服务器。</span><br><span class="line">hexo server -s #静态模式</span><br><span class="line">hexo server -p 5000 #更改端口</span><br><span class="line">hexo server -i 192.168.1.1 #自定义 IP</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><figcaption><span>script</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">hexo clean #清除缓存 网页正常情况下可以忽略此条命令</span><br><span class="line">hexo g #生成静态网页</span><br><span class="line">hexo d #开始部署</span><br></pre></td></tr></table></figure>
+<h2 id="监视文件变动"><a href="#监视文件变动" class="headerlink" title="监视文件变动"></a>监视文件变动</h2><figure class="highlight shell"><figcaption><span>script</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">hexo generate #使用 Hexo 生成静态文件快速而且简单</span><br><span class="line">hexo generate --watch #监视文件变动</span><br></pre></td></tr></table></figure>
+<h2 id="完成后部署"><a href="#完成后部署" class="headerlink" title="完成后部署"></a>完成后部署</h2><p>两个命令的作用是相同的<br><figure class="highlight shell"><figcaption><span>script</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">hexo generate --deploy</span><br><span class="line">hexo deploy --generate</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight shell"><figcaption><span>script</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">hexo deploy -g</span><br><span class="line">hexo server -g</span><br></pre></td></tr></table></figure>
+<h2 id="草稿"><a href="#草稿" class="headerlink" title="草稿"></a>草稿</h2><figure class="highlight shell"><figcaption><span>script</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexo publish [layout] &lt;title&gt;</span><br></pre></td></tr></table></figure>
+<h2 id="模版"><a href="#模版" class="headerlink" title="模版"></a>模版</h2><figure class="highlight shell"><figcaption><span>script</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">hexo new "postName" #新建文章</span><br><span class="line">hexo new page "pageName" #新建页面</span><br><span class="line">hexo generate #生成静态页面至public目录</span><br><span class="line">hexo server #开启预览访问端口（默认端口4000，'ctrl + c'关闭server）</span><br><span class="line">hexo deploy #将.deploy目录部署到GitHub</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><figcaption><span>script</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">hexo new [layout] &lt;title&gt;</span><br><span class="line">hexo new photo "My Gallery"</span><br><span class="line">hexo new "Hello World" --lang tw</span><br></pre></td></tr></table></figure>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">变量</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">layout</td>
+<td>布局</td>
+</tr>
+<tr>
+<td style="text-align:left">title</td>
+<td>标题</td>
+</tr>
+<tr>
+<td style="text-align:left">date</td>
+<td>文件建立日期</td>
+</tr>
+</tbody>
+</table>
+<figure class="highlight shell"><figcaption><span>script</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">title: 使用Hexo搭建个人博客</span><br><span class="line">layout: post</span><br><span class="line">date: 2014-03-03 19:07:43</span><br><span class="line">comments: true</span><br><span class="line">categories: Blog</span><br><span class="line">tags: [Hexo]</span><br><span class="line">keywords: Hexo, Blog</span><br><span class="line">description: 生命在于折腾，又把博客折腾到Hexo了。给Hexo点赞。</span><br></pre></td></tr></table></figure>
+<h2 id="模版（Scaffold）"><a href="#模版（Scaffold）" class="headerlink" title="模版（Scaffold）"></a>模版（Scaffold）</h2><figure class="highlight shell"><figcaption><span>script</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexo new photo "My Gallery"</span><br></pre></td></tr></table></figure>
+<table>
+<thead>
+<tr>
+<th>变量</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>layout</td>
+<td>布局</td>
+</tr>
+<tr>
+<td>title</td>
+<td>标题</td>
+</tr>
+<tr>
+<td>date</td>
+<td>文件建立日期</td>
+</tr>
+</tbody>
+</table>
+<h2 id="设置文章摘要"><a href="#设置文章摘要" class="headerlink" title="设置文章摘要"></a>设置文章摘要</h2><figure class="highlight shell"><figcaption><span>script</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">以上是文章摘要 &lt;!--more--&gt; 以下是余下全文</span><br></pre></td></tr></table></figure>
+<h2 id="写作"><a href="#写作" class="headerlink" title="写作"></a>写作</h2><figure class="highlight shell"><figcaption><span>script</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">hexo new page &lt;title&gt;</span><br><span class="line">hexo new post &lt;title&gt;</span><br></pre></td></tr></table></figure>
+<table>
+<thead>
+<tr>
+<th>变量</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>:title</td>
+<td>标题</td>
+</tr>
+<tr>
+<td>:year</td>
+<td>建立的年份（4 位数）</td>
+</tr>
+<tr>
+<td>:month</td>
+<td>建立的月份（2 位数）</td>
+</tr>
+<tr>
+<td>:i_month</td>
+<td>建立的月份（去掉开头的零）</td>
+</tr>
+<tr>
+<td>:day</td>
+<td>建立的日期（2 位数）</td>
+</tr>
+<tr>
+<td>:i_day</td>
+<td>建立的日期（去掉开头的零）</td>
+</tr>
+</tbody>
+</table>
+<h2 id="推送到服务器上"><a href="#推送到服务器上" class="headerlink" title="推送到服务器上"></a>推送到服务器上</h2><figure class="highlight shell"><figcaption><span>script</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">hexo n #写文章</span><br><span class="line">hexo g #生成</span><br><span class="line">hexo d #部署 #可与hexo g合并为 hexo d -g</span><br></pre></td></tr></table></figure>
+<p>##报错</p>
+<h3 id="1-找不到git部署"><a href="#1-找不到git部署" class="headerlink" title="1.找不到git部署"></a>1.找不到git部署</h3><figure class="highlight shell"><figcaption><span>script</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ERROR Deployer not found: git</span><br></pre></td></tr></table></figure>
+<p>###解决方法<br><figure class="highlight shell"><figcaption><span>script</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install hexo-deployer-git --save</span><br></pre></td></tr></table></figure></p>
+<h3 id="3-部署类型设置git"><a href="#3-部署类型设置git" class="headerlink" title="3.部署类型设置git"></a>3.部署类型设置git</h3><p>hexo 3.0 部署类型不再是github，_config.yml 中修改<br><figure class="highlight shell"><figcaption><span>script</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> Deployment</span></span><br><span class="line"><span class="meta">#</span><span class="bash"><span class="comment"># Docs: http://hexo.io/docs/deployment.html</span></span></span><br><span class="line">deploy:</span><br><span class="line">  type: git</span><br><span class="line">  repository: git@***.github.com:***/***.github.io.git</span><br><span class="line">  branch: master</span><br></pre></td></tr></table></figure></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://alexguo.net/2020/04/08/hexo-常用命令/" data-id="ck8qxvl9c000ljoy7pi03erfc" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-MySQL的binlog日志" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2018/12/28/MySQL的binlog日志/" class="article-date">
@@ -180,7 +313,7 @@ c3.将 name=&apos;李四&apos;、name=&apos;小二&apos; 多步操作一起恢�
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://alexguo.net/2018/12/28/MySQL的binlog日志/" data-id="cjti2wksm004bngvwmjhxq82x" class="article-share-link">Share</a>
+      <a data-url="https://alexguo.net/2018/12/28/MySQL的binlog日志/" data-id="ck8qxvlb80045joy776qo68le" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/bin-log/">bin_log</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mysql/">mysql</a></li></ul>
@@ -232,7 +365,7 @@ c3.将 name=&apos;李四&apos;、name=&apos;小二&apos; 多步操作一起恢�
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://alexguo.net/2018/12/28/大数据之数据采集方法/" data-id="cjti2wkr5001gngvwhriqyze1" class="article-share-link">Share</a>
+      <a data-url="https://alexguo.net/2018/12/28/大数据之数据采集方法/" data-id="ck8qxvl9r001gjoy7chwnz19f" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/数据采集/">数据采集</a></li></ul>
@@ -276,7 +409,7 @@ c3.将 name=&apos;李四&apos;、name=&apos;小二&apos; 多步操作一起恢�
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://alexguo.net/2018/12/27/深入理解mongodb和hbase区别/" data-id="cjti2wkrl002dngvw33uq0p21" class="article-share-link">Share</a>
+      <a data-url="https://alexguo.net/2018/12/27/深入理解mongodb和hbase区别/" data-id="ck8qxvla8002ejoy7j2tujqfo" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mongodb/">mongodb</a></li></ul>
@@ -326,7 +459,7 @@ c3.将 name=&apos;李四&apos;、name=&apos;小二&apos; 多步操作一起恢�
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://alexguo.net/2018/12/19/大数据采集方案：mysql-binlog-注意点/" data-id="cjti2wkrj002angvws8g4iex5" class="article-share-link">Share</a>
+      <a data-url="https://alexguo.net/2018/12/19/大数据采集方案：mysql-binlog-注意点/" data-id="ck8qxvla50028joy7d7iqgrjj" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/bin-log/">bin_log</a></li></ul>
@@ -569,7 +702,7 @@ c3.将 name=&apos;李四&apos;、name=&apos;小二&apos; 多步操作一起恢�
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://alexguo.net/2018/12/19/jvm常见问题知识/" data-id="cjti2wksl004angvwpzlfvayu" class="article-share-link">Share</a>
+      <a data-url="https://alexguo.net/2018/12/19/jvm常见问题知识/" data-id="ck8qxvlb90046joy7poxxpx7w" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/jvm/">jvm</a></li></ul>
@@ -611,7 +744,7 @@ c3.将 name=&apos;李四&apos;、name=&apos;小二&apos; 多步操作一起恢�
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://alexguo.net/2018/12/19/JVM性能调优监控工具jps、jstack、jmap、jhat、jstat、hprof使用详解/" data-id="cjti2wkqa0004ngvwc9jq8eb1" class="article-share-link">Share</a>
+      <a data-url="https://alexguo.net/2018/12/19/JVM性能调优监控工具jps、jstack、jmap、jhat、jstat、hprof使用详解/" data-id="ck8qxvl8x0004joy7zgr46it8" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/jvm/">jvm</a></li></ul>
@@ -662,7 +795,7 @@ c3.将 name=&apos;李四&apos;、name=&apos;小二&apos; 多步操作一起恢�
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://alexguo.net/2018/12/18/MySQL二进制日志（binary-log）总结/" data-id="cjti2wkqb0005ngvw4awz46hk" class="article-share-link">Share</a>
+      <a data-url="https://alexguo.net/2018/12/18/MySQL二进制日志（binary-log）总结/" data-id="ck8qxvl92000ajoy76zohlrcg" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mysql/">mysql</a></li></ul>
@@ -882,7 +1015,7 @@ def cacl_main(common_index_obj,domain_users):
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://alexguo.net/2018/12/18/大数据日志分析系统-python脚本利用es聚合计算/" data-id="cjti2wkrd001yngvw2ubkkb2j" class="article-share-link">Share</a>
+      <a data-url="https://alexguo.net/2018/12/18/大数据日志分析系统-python脚本利用es聚合计算/" data-id="ck8qxvl9w001rjoy7bywaehn4" class="article-share-link">Share</a>
       
       
     </footer>
@@ -952,72 +1085,10 @@ sp30</code>　</p>
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://alexguo.net/2018/12/18/大数据日志分析系统-hdfs日志存储/" data-id="cjti2wkr8001nngvwr2zn3yz2" class="article-share-link">Share</a>
+      <a data-url="https://alexguo.net/2018/12/18/大数据日志分析系统-hdfs日志存储/" data-id="ck8qxvl9y001ujoy7ee5ofr1y" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hdfs/">hdfs</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-大数据日志分析系统-spark进行日志计算" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2018/12/18/大数据日志分析系统-spark进行日志计算/" class="article-date">
-  <time datetime="2018-12-18T07:39:49.000Z" itemprop="datePublished">2018-12-18</time>
-</a>
-    
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/大数据/">大数据</a>
-  </div>
-
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/12/18/大数据日志分析系统-spark进行日志计算/">大数据日志分析系统-spark进行日志计算</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>#spark简介：<br>Apache Spark 是专为大规模数据处理而设计的快速通用的计算引擎。</p>
-<p>#需要满足的项目需求：<br>用spark进行实时统计，从kafka中获取数据，流式计算每分钟一次将计算结果存入es，供客户进行查询。</p>
-<p>#这里不用直接存入es的方式进行聚合或者存入es之后再进行计算的原因：</p>
-<ul>
-<li><p>1.直接存入es进行聚合的话es中会随着时间的推移保存大量的原始日志，es存入数据量太大的数据会产生性能问题,而且大量用户同时查询也会产生聚合过多的性能问题。</p>
-</li>
-<li><p>2.先将原始日志存入es，计算结果数据后再次删除原始日志   会产生问题： </p>
-<ul>
-<li><p>1）虽然现有数据量es能够满足要求，但是当数据量再次大增时会产生kafka堆积 - es速度跟不上，而spark的处理速度可以跟得上  </p>
-</li>
-<li><p>2）实时性在逻辑上和技术上得不到很好的保证。例如每次计算当前时间前5分钟的日志（线上python脚本运行时计算当前时间前1小时日志），一旦数据量过大产生kafka堆积，日志不能实时收集到es就会产生计算数据少的问题。</p>
-</li>
-</ul>
-</li>
-</ul>
-<p>#做的过程中遇到的问题：<br>遇到过内存问题，算是由于缓存处理不当引起的 后来改用了LruCache      现象是不断的进行消费没有产生kafka堆积，但是没有结果数据，运行正常</p>
-<p>#spark配置：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">ubuntu@sp26:~/apps/spark-1.6.1-bin-hadoop2.6/conf$ cat spark-env.sh | grep -v &apos;#&apos;</span><br><span class="line">export JAVA_HOME=/home/ubuntu/apps/jdk1.8.0_144</span><br><span class="line"></span><br><span class="line">export SPARK_MASTER_IP=sp26</span><br><span class="line"></span><br><span class="line">export SPARK_MASTER_PORT=7077</span><br></pre></td></tr></table></figure></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">ubuntu@sp26:~/apps/spark-1.6.1-bin-hadoop2.6/conf$ cat slaves</span><br><span class="line"></span><br><span class="line">sp27</span><br><span class="line"></span><br><span class="line">sp28</span><br><span class="line"></span><br><span class="line">sp29</span><br><span class="line"></span><br><span class="line">sp30</span><br></pre></td></tr></table></figure>
-<p>#当然要有 ssh免密配置，linux环境变量配置等等，以后的文章会进行补充<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">启动ubuntu@sp26:~/apps/spark-1.6.1-bin-hadoop2.6$ sbin/start-all.sh</span><br><span class="line"></span><br><span class="line">http://sp26:8080</span><br><span class="line"></span><br><span class="line">这先是单节点</span><br></pre></td></tr></table></figure></p>
-<p>#spark代码：<br>git地址：<a href="https://github.com/penghaoyou5/SparkLogAnalysis.git" target="_blank" rel="noopener">https://github.com/penghaoyou5/SparkLogAnalysis.git</a></p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="https://alexguo.net/2018/12/18/大数据日志分析系统-spark进行日志计算/" data-id="cjti2wkrb001ungvwx4qcqhg6" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/spark/">spark</a></li></ul>
 
     </footer>
   </div>
@@ -1070,7 +1141,7 @@ sp30</code>　</p>
   <div class="widget-wrap">
     <h3 class="widget-title">归档</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">十二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">十一月 2018</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/04/">四月 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">十二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">十一月 2018</a></li></ul>
     </div>
   </div>
 
@@ -1081,6 +1152,10 @@ sp30</code>　</p>
     <h3 class="widget-title">最新文章</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/2020/04/08/hexo-常用命令/">hexo 常用命令</a>
+          </li>
         
           <li>
             <a href="/2018/12/28/MySQL的binlog日志/">MySQL的binlog日志</a>
@@ -1098,10 +1173,6 @@ sp30</code>　</p>
             <a href="/2018/12/19/大数据采集方案：mysql-binlog-注意点/">大数据采集方案：mysql-binlog 注意点</a>
           </li>
         
-          <li>
-            <a href="/2018/12/19/jvm常见问题知识/">jvm常见问题知识</a>
-          </li>
-        
       </ul>
     </div>
   </div>
@@ -1114,7 +1185,7 @@ sp30</code>　</p>
   
   <div class="outer">
     <div id="footer-info" class="inner">
-      &copy; 2019 Alex Guo<br>
+      &copy; 2020 Alex Guo<br>
       Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
     </div>
   </div>
